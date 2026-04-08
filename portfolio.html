@@ -88,23 +88,11 @@
       display: inline-flex;
       align-items: center;
       gap: 12px;
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      background: rgba(8,8,8,0.22);
-      backdrop-filter: blur(10px);
       text-decoration: none;
     }
     .nav-logo img {
       height: 44px; width: auto; display: block;
       filter: var(--logo); transition: filter 0.5s var(--ease-lux);
-    }
-    .nav-logo span {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--txt);
-      white-space: nowrap;
     }
 
     /* centred tab strip */
@@ -350,9 +338,8 @@
       .nav-btn, .tab-btn { cursor: pointer; }
 
       nav { padding: max(12px, env(safe-area-inset-top)) 20px 12px; height: auto; }
-      .nav-logo { gap: 8px; padding: 8px 10px; }
+      .nav-logo { gap: 8px; }
       .nav-logo img { height: 24px; }
-      .nav-logo span { font-size: 0.5rem; letter-spacing: 0.12em; }
       .tab-bar { padding: 0 20px; min-height: 46px; gap: 24px; overflow-x: auto; }
       nav { justify-content: space-between; }
       .nav-right { gap: 8px; }
@@ -391,7 +378,6 @@
     <nav>
       <a class="nav-logo" href="index.html">
         <img src="logo/trans.png" alt="Aftercells Studio" />
-        <span>Aftercells Studio</span>
       </a>
       <div class="nav-tabs">
         <button class="tab-btn active" data-panel="panel-3d" type="button">3D</button>
