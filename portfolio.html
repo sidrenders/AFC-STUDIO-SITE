@@ -500,7 +500,7 @@
                   </div>
                 </div>
                 <div class="work-card-video">
-                  <video src="videos/motion/river-web.mp4" muted loop playsinline preload="none"></video>
+                  <video src="videos/motion/river-web.mp4" muted loop playsinline preload="none" data-seamless-loop="0.12"></video>
                 </div>
               </div>
 
@@ -625,11 +625,30 @@
       host.appendChild(bar);
     }
 
+    function enableSeamlessLoop(video) {
+      const loopBuffer = Number(video.dataset.seamlessLoop || 0);
+      if (!loopBuffer) return;
+      let seeking = false;
+      video.addEventListener('timeupdate', () => {
+        if (seeking || !video.duration || Number.isNaN(video.duration)) return;
+        if (video.currentTime >= video.duration - loopBuffer) {
+          seeking = true;
+          video.currentTime = 0.03;
+          video.play().catch(() => {}).finally(() => { seeking = false; });
+        }
+      });
+      video.addEventListener('ended', () => {
+        video.currentTime = 0.03;
+        video.play().catch(() => {});
+      });
+    }
+
     document.querySelectorAll('.work-card-video').forEach(container => {
       const video = container.querySelector('video');
       if (!video) return;
       video.preload = 'metadata';
       video.muted = true;
+      enableSeamlessLoop(video);
       // grouped cards get a single shared bar - skip individual ones
       if (!container.closest('.work-card-video-group')) {
         makeSoundBar([video], container);
@@ -640,7 +659,10 @@
     // one shared sound bar per grouped card
     document.querySelectorAll('.work-card-video-group').forEach(group => {
       const videos = Array.from(group.querySelectorAll('video'));
-      videos.forEach(video => { video.preload = 'metadata'; });
+      videos.forEach(video => {
+        video.preload = 'metadata';
+        enableSeamlessLoop(video);
+      });
       group.style.position = 'relative';
       makeSoundBar(videos, group);
     });
