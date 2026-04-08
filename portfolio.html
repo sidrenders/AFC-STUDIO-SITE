@@ -352,10 +352,11 @@
 
       .work-card { grid-template-columns: 1fr; }
       .work-card-info { border-right: none; border-bottom: 1px solid var(--border); min-height: auto; }
-      .work-card-video { min-height: 200px; }
-      .work-card-video-group { grid-template-columns: 1fr; }
-      .work-card-video-group .work-card-video { min-height: 180px; }
-      .vid-sound-bar { opacity: 1; right: 10px; bottom: 10px; padding: 7px 12px; }
+      .work-card-video { display: flex; flex-direction: column; min-height: 280px; }
+      .work-card-video video { flex: 1; min-height: 220px; }
+      .work-card-video-group { display: flex; flex-direction: column; gap: 10px; }
+      .work-card-video-group .work-card-video { min-height: 220px; }
+      .vid-sound-bar { position: static; opacity: 1; margin: 10px 10px 12px auto; padding: 7px 12px; }
       .page-date { position: static; padding: 0 20px calc(20px + env(safe-area-inset-bottom)); }
     }
   </style>
@@ -593,7 +594,7 @@
           video.muted = true;
         }
       });
-    }, { threshold: thresholds });
+    }, { threshold: thresholds, rootMargin: '300px 0px' });
 
     function makeSoundBar(videos, host) {
       videos.forEach(v => { v.muted = true; });
@@ -627,6 +628,7 @@
     document.querySelectorAll('.work-card-video').forEach(container => {
       const video = container.querySelector('video');
       if (!video) return;
+      video.preload = 'metadata';
       video.muted = true;
       // grouped cards get a single shared bar - skip individual ones
       if (!container.closest('.work-card-video-group')) {
@@ -638,8 +640,13 @@
     // one shared sound bar per grouped card
     document.querySelectorAll('.work-card-video-group').forEach(group => {
       const videos = Array.from(group.querySelectorAll('video'));
+      videos.forEach(video => { video.preload = 'metadata'; });
       group.style.position = 'relative';
       makeSoundBar(videos, group);
+    });
+
+    document.querySelectorAll('.panel.active video').forEach((video, index) => {
+      if (index < 3 && video.readyState === 0) video.load();
     });
 
     function updateSliderTrack(sl) {
