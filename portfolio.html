@@ -88,6 +88,10 @@
       display: inline-flex;
       align-items: center;
       gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      background: rgba(8,8,8,0.22);
+      backdrop-filter: blur(10px);
       text-decoration: none;
     }
     .nav-logo img {
@@ -346,9 +350,9 @@
       .nav-btn, .tab-btn { cursor: pointer; }
 
       nav { padding: max(12px, env(safe-area-inset-top)) 20px 12px; height: auto; }
-      .nav-logo { gap: 8px; }
-      .nav-logo img { height: 28px; }
-      .nav-logo span { font-size: 0.58rem; letter-spacing: 0.14em; }
+      .nav-logo { gap: 8px; padding: 8px 10px; }
+      .nav-logo img { height: 24px; }
+      .nav-logo span { font-size: 0.5rem; letter-spacing: 0.12em; }
       .tab-bar { padding: 0 20px; min-height: 46px; gap: 24px; overflow-x: auto; }
       nav { justify-content: space-between; }
       .nav-right { gap: 8px; }
