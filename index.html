@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aftercells Studio - 3D &amp; Motion Graphics</title>
+  <meta name="description" content="Aftercells Studio - 3D &amp; Motion Graphics for studios and agencies. Your visual partner for cinematic 3D animation, motion graphics, and brand films." />
+  <meta property="og:title" content="Aftercells Studio - 3D &amp; Motion Graphics" />
+  <meta property="og:description" content="3D &amp; Motion Graphics for Studios &amp; Agencies. Cinematic animation and motion design." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="logo/trans.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Aftercells Studio - 3D &amp; Motion Graphics" />
+  <meta name="twitter:description" content="3D &amp; Motion Graphics for Studios &amp; Agencies." />
+  <meta name="theme-color" content="#020202" />
+  <link rel="icon" type="image/png" href="logo/trans.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--ease-lux:cubic-bezier(.16,1,.3,1)}
+    [data-theme="dark"]{--bg:#020202;--txt:#fff;--dim:#8a8a8a;--copy:rgba(255,255,255,.22);--ghost:rgba(255,255,255,.72);--ghost-border:rgba(255,255,255,.18);--ghost-hover:rgba(255,255,255,.45);--fill:#fff;--fill-text:#060606;--line:rgba(255,255,255,.18);--logo:brightness(1);--video-opacity:.5}
+    [data-theme="light"]{--bg:#efede7;--txt:#101010;--dim:#666;--copy:rgba(0,0,0,.36);--ghost:rgba(16,16,16,.72);--ghost-border:rgba(16,16,16,.18);--ghost-hover:rgba(16,16,16,.45);--fill:#101010;--fill-text:#f6f3ee;--line:rgba(16,16,16,.18);--logo:brightness(1);--video-opacity:.3}
+    html,body{width:100%;height:100%;overflow:hidden}
+    body{background:var(--bg);color:var(--txt);font-family:"Manrope",sans-serif;-webkit-font-smoothing:antialiased;cursor:none;transition:background-color .5s var(--ease-lux),color .5s var(--ease-lux)}
+    .bg-vid{position:fixed;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s var(--ease-lux);pointer-events:none}
+    .bg-vid.active{opacity:var(--video-opacity)}
+    #bg-video-overlay{position:fixed;inset:0;z-index:1;pointer-events:none;transition:background .5s var(--ease-lux)}
+    [data-theme="dark"] #bg-video-overlay{background:radial-gradient(circle at center,rgba(2,2,2,0) 0%,rgba(2,2,2,0) 42%,rgba(2,2,2,.08) 58%,rgba(2,2,2,.38) 78%,rgba(2,2,2,.86) 100%),linear-gradient(to bottom,rgba(2,2,2,.68) 0%,rgba(2,2,2,.05) 24%,rgba(2,2,2,.05) 76%,rgba(2,2,2,.74) 100%)}
+    [data-theme="light"] #bg-video-overlay{background:radial-gradient(circle at center,rgba(239,237,231,0) 0%,rgba(239,237,231,0) 42%,rgba(239,237,231,.05) 58%,rgba(239,237,231,.28) 78%,rgba(239,237,231,.8) 100%),linear-gradient(to bottom,rgba(239,237,231,.54) 0%,rgba(239,237,231,.04) 24%,rgba(239,237,231,.04) 76%,rgba(239,237,231,.6) 100%)}
+    .cursor{position:fixed;width:8px;height:8px;background:var(--txt);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference}
+    .cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(128,128,128,.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);mix-blend-mode:difference}
+    .controls{position:fixed;top:40px;right:40px;z-index:20;display:flex;gap:8px;animation:fadeInRight 1s var(--ease-lux) .6s both}
+    .ctrl-btn,.btn{font-family:"JetBrains Mono",monospace;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:color .25s,border-color .25s,background-color .25s,opacity .25s}
+    .ctrl-btn{background:none;border:1px solid var(--ghost-border);color:var(--dim);font-size:.62rem;padding:8px 14px;cursor:none}
+    .ctrl-btn:hover{color:var(--txt);border-color:var(--ghost-hover)}
+    .wrapper{position:relative;z-index:3;width:100%;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .logo-wrap{position:fixed;top:40px;left:50%;transform:translateX(-50%);z-index:20;animation:fadeInDown 1s var(--ease-lux) both;text-decoration:none}
+    .logo-wrap img{height:44px;width:auto;display:block;filter:var(--logo);transition:filter .5s var(--ease-lux)}
+    .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px;padding:0 40px;width:100%}
+    .hero-eyebrow{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);opacity:0;animation:fadeInUp 1s var(--ease-lux) .3s forwards}
+    .hero-eyebrow span{display:inline-block;width:20px;height:1px;background:var(--dim);vertical-align:middle;margin:0 10px}
+    .hero-headline{font-weight:200;line-height:1.1;letter-spacing:-.03em;max-width:1120px;width:100%;padding-bottom:.12em;opacity:0;animation:breatheFadeIn 1.2s var(--ease-lux) .5s forwards;background:linear-gradient(180deg,var(--txt) 0%,var(--txt) 55%,rgba(255,255,255,.32) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-headline .line{display:block;white-space:nowrap}
+    .hero-headline .line:first-child{font-size:clamp(2.8rem,7vw,7.2rem)}
+    .hero-headline .line:last-child{font-size:clamp(1.2rem,3vw,3rem);letter-spacing:-.01em}
+    [data-theme="light"] .hero-headline{background:linear-gradient(160deg,#101010 30%,rgba(16,16,16,.45) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-sub{font-family:"JetBrains Mono",monospace;font-size:clamp(.72rem,1.3vw,.88rem);color:var(--dim);letter-spacing:.12em;text-transform:uppercase;opacity:0;animation:fadeInUp 1s var(--ease-lux) .85s forwards;display:flex;align-items:center;gap:16px;white-space:nowrap}
+    .hero-sub::before,.hero-sub::after{content:"";display:block;width:32px;height:1px;background:var(--line)}
+    .hero-btns{display:flex;gap:12px;margin-top:8px;opacity:0;animation:fadeInUp 1s var(--ease-lux) 1.1s forwards}
+    .btn{font-size:.72rem;font-weight:500;padding:12px 28px;white-space:nowrap}
+    .btn-outline{color:var(--ghost);border:1px solid var(--ghost-border);background:transparent}
+    .btn-outline:hover{color:var(--txt);border-color:var(--ghost-hover)}
+    .btn-fill{color:var(--fill-text);background:var(--fill);border:1px solid var(--fill)}
+    .btn-fill:hover{opacity:.84}
+    .bottom-label{position:fixed;bottom:20px;left:0;width:100%;text-align:center;font-family:"JetBrains Mono",monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--copy);animation:fadeInUp 1s var(--ease-lux) 1.4s both;white-space:nowrap;transition:color .5s var(--ease-lux)}
+    @keyframes fadeInDown{from{opacity:0;transform:translateX(-50%) translateY(-14px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+    @keyframes fadeInRight{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes breatheFadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @media (max-width:768px){
+      .cursor,.cursor-ring{display:none} body{cursor:auto} .ctrl-btn,.btn{cursor:pointer}
+      .controls{top:auto;bottom:28px;right:50%;transform:translateX(50%);animation:fadeInUp 1s var(--ease-lux) .6s both}
+      .ctrl-btn{font-size:.58rem;padding:7px 12px}.logo-wrap{top:28px}.logo-wrap img{height:32px}.hero{gap:14px;padding:0 24px}.hero-eyebrow{font-size:.62rem;letter-spacing:.16em}.hero-eyebrow span{width:14px;margin:0 8px}.hero-headline{font-size:clamp(2rem,10vw,3.2rem);letter-spacing:-.02em;line-height:1.12}.hero-sub{font-size:.68rem;letter-spacing:.1em;gap:10px}.hero-sub::before,.hero-sub::after{width:20px}.hero-btns{flex-direction:column;align-items:center;gap:10px;width:100%;max-width:280px}.btn{width:100%;text-align:center;padding:14px 24px}.bottom-label{display:none}
+      [data-theme="dark"] #bg-video-overlay{background:radial-gradient(circle at center,rgba(2,2,2,0) 0%,rgba(2,2,2,0) 28%,rgba(2,2,2,.12) 50%,rgba(2,2,2,.5) 80%,rgba(2,2,2,.9) 100%),linear-gradient(to bottom,rgba(2,2,2,.76) 0%,rgba(2,2,2,.1) 18%,rgba(2,2,2,.1) 74%,rgba(2,2,2,.8) 100%)}
+      [data-theme="light"] #bg-video-overlay{background:radial-gradient(circle at center,rgba(239,237,231,0) 0%,rgba(239,237,231,0) 28%,rgba(239,237,231,.08) 50%,rgba(239,237,231,.36) 80%,rgba(239,237,231,.84) 100%),linear-gradient(to bottom,rgba(239,237,231,.62) 0%,rgba(239,237,231,.08) 18%,rgba(239,237,231,.08) 74%,rgba(239,237,231,.68) 100%)}
+    }
+    @media (max-width:768px) and (orientation:landscape){.hero-headline{font-size:clamp(1.6rem,6vw,2.8rem)}.hero{gap:10px}.hero-btns{flex-direction:row;max-width:none;width:auto}.btn{width:auto}}
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <video class="bg-vid" id="vid-a" muted playsinline preload="none"></video>
+  <video class="bg-vid" id="vid-b" muted playsinline preload="none"></video>
+  <div id="bg-video-overlay"></div>
+  <div class="controls"><button class="ctrl-btn" id="btn-theme" type="button">Light</button></div>
+  <div class="wrapper">
+    <a class="logo-wrap" href="index.html"><img src="logo/trans.png" alt="Aftercells Studio" /></a>
+    <main class="hero">
+      <p class="hero-eyebrow"><span></span>Aftercells Studio<span></span></p>
+      <h1 class="hero-headline"><span class="line">3D &amp; Motion Graphics</span><span class="line">for Studios &amp; Agencies</span></h1>
+      <p class="hero-sub">Your Visual Partner</p>
+      <div class="hero-btns">
+        <a href="portfolio.html" class="btn btn-outline">Portfolio</a>
+        <a href="https://calendly.com/sidrenders/sidrenders-calendly" class="btn btn-fill" target="_blank" rel="noopener">Book a Call</a>
+      </div>
+    </main>
+    <p class="bottom-label" id="site-status"></p>
+  </div>
+  <script>
+    (function () {
+      const THEME_KEY = "aftercells-theme";
+      const VIDEOS = [
+        "videos/landing%20page/lucid-web.mp4",
+        "videos/landing%20page/lucid-web_1.mp4",
+        "videos/landing%20page/benq-web.mp4",
+        "videos/landing%20page/the-1975.mp4",
+        "videos/landing%20page/reentry-evacuation.mp4",
+        "videos/landing%20page/lightphone.mp4",
+        "videos/landing%20page/river-web.mp4",
+        "videos/landing%20page/2024.mp4",
+        "videos/landing%20page/2024_1.mp4",
+        "videos/landing%20page/try-again.mp4"
+      ];
+      for (let i = VIDEOS.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [VIDEOS[i], VIDEOS[j]] = [VIDEOS[j], VIDEOS[i]];
+      }
+      const CLIP_DURATION = 6000;
+      const html = document.documentElement;
+      const btnTheme = document.getElementById("btn-theme");
+      const themeColor = document.querySelector('meta[name="theme-color"]');
+      const vidA = document.getElementById("vid-a");
+      const vidB = document.getElementById("vid-b");
+      const cursor = document.getElementById("cursor");
+      const ring = document.getElementById("cursorRing");
+      const siteStatus = document.getElementById("site-status");
+      const dateFormatter = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" });
+      let activeVid = vidA, inactiveVid = vidB, clipIdx = 0, mx = -200, my = -200, rx = -200, ry = -200, clipTimer = null;
+      function syncTheme(theme) {
+        html.setAttribute("data-theme", theme);
+        btnTheme.textContent = theme === "dark" ? "Light" : "Dark";
+        themeColor.setAttribute("content", theme === "dark" ? "#020202" : "#efede7");
+      }
+      function loadAndPlay(el, src) { el.src = src; el.load(); return el.play().catch(function () {}); }
+      function nextClip() {
+        clipIdx = (clipIdx + 1) % VIDEOS.length;
+        loadAndPlay(inactiveVid, VIDEOS[clipIdx]).then(function () {
+          inactiveVid.classList.add("active");
+          activeVid.classList.remove("active");
+          const prev = activeVid;
+          activeVid = inactiveVid;
+          inactiveVid = prev;
+        });
+      }
+      function updateStatus() {
+        const now = new Date();
+        siteStatus.textContent = dateFormatter.format(now) + " / \u00a9 " + now.getFullYear() + " Aftercells Studio";
+      }
+      function startRotation() {
+        if (!clipTimer) clipTimer = window.setInterval(nextClip, CLIP_DURATION);
+      }
+      function stopRotation() {
+        if (clipTimer) {
+          window.clearInterval(clipTimer);
+          clipTimer = null;
+        }
+      }
+      updateStatus();
+      syncTheme(localStorage.getItem(THEME_KEY) || "dark");
+      btnTheme.addEventListener("click", function () {
+        const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        localStorage.setItem(THEME_KEY, next);
+        syncTheme(next);
+      });
+      loadAndPlay(vidA, VIDEOS[0]);
+      vidA.classList.add("active");
+      vidB.src = VIDEOS[1];
+      vidB.load();
+      startRotation();
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          stopRotation();
+          activeVid.pause();
+          inactiveVid.pause();
+          return;
+        }
+        activeVid.play().catch(function () {});
+        startRotation();
+      });
+      document.addEventListener("mousemove", function (event) { mx = event.clientX; my = event.clientY; });
+      (function tick() {
+        cursor.style.left = mx + "px";
+        cursor.style.top = my + "px";
+        rx += (mx - rx) * 0.12;
+        ry += (my - ry) * 0.12;
+        ring.style.left = rx + "px";
+        ring.style.top = ry + "px";
+        requestAnimationFrame(tick);
+      })();
+    })();
+  </script>
+</body>
+</html>
+

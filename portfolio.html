@@ -1,0 +1,684 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio - Aftercells Studio</title>
+  <meta name="description" content="Aftercells Studio portfolio - 3D animation, motion graphics, and brand films for studios and agencies." />
+  <meta property="og:title" content="Portfolio - Aftercells Studio" />
+  <meta property="og:description" content="3D &amp; Motion Graphics for Studios &amp; Agencies. Cinematic animation and motion design." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="logo/trans.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Portfolio - Aftercells Studio" />
+  <meta name="twitter:description" content="3D &amp; Motion Graphics for Studios &amp; Agencies." />
+  <meta name="theme-color" content="#080808" />
+  <link rel="icon" type="image/png" href="logo/trans.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --ease-lux: cubic-bezier(0.16, 1, 0.3, 1); }
+
+    [data-theme="dark"] {
+      --bg:      #080808;
+      --txt:     #ffffff;
+      --dim:     #555555;
+      --border:  rgba(255,255,255,0.07);
+      --hborder: rgba(255,255,255,0.2);
+      --logo:    brightness(1);
+      --card-bg: #111111;
+    }
+    [data-theme="light"] {
+      --bg:      #f0ede8;
+      --txt:     #0c0c0c;
+      --dim:     #999999;
+      --border:  rgba(0,0,0,0.07);
+      --hborder: rgba(0,0,0,0.2);
+      --logo:    brightness(1);
+      --card-bg: #e8e5e0;
+    }
+
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+
+    body {
+      background: var(--bg); color: var(--txt);
+      font-family: 'Manrope', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      cursor: none;
+      transition: background 0.5s var(--ease-lux), color 0.5s var(--ease-lux);
+    }
+
+    /* Cursor */
+    .cursor {
+      position: fixed; width: 8px; height: 8px;
+      background: var(--txt); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border: 1px solid rgba(128,128,128,0.45); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: width 0.35s var(--ease-lux), height 0.35s var(--ease-lux);
+      mix-blend-mode: difference;
+    }
+    .cursor-ring.expand { width: 56px; height: 56px; }
+
+    /* Shell */
+    .shell {
+      display: grid;
+      grid-template-rows: 88px auto 1fr;
+      height: 100vh;
+    }
+
+    /* Nav */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: relative; z-index: 10;
+      transition: background 0.5s var(--ease-lux), border-color 0.5s var(--ease-lux);
+    }
+    .nav-logo img {
+      height: 44px; width: auto; display: block;
+      filter: var(--logo); transition: filter 0.5s var(--ease-lux);
+    }
+
+    /* centred tab strip */
+    .nav-tabs { display: none; }
+
+    /* Tab bar (below nav) */
+    .tab-bar {
+      display: flex; align-items: center; justify-content: center; gap: 48px;
+      padding: 0 48px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      height: 48px;
+      transition: background 0.5s var(--ease-lux), border-color 0.5s var(--ease-lux);
+    }
+    .tab-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+      background: none; border: none; border-bottom: 1px solid transparent;
+      color: var(--dim); padding: 4px 0; cursor: none;
+      transition: color 0.25s var(--ease-lux), border-color 0.25s var(--ease-lux);
+    }
+    .tab-btn.active { color: var(--txt); border-bottom-color: var(--txt); }
+
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .nav-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
+      text-decoration: none; color: var(--dim);
+      background: none; border: 1px solid var(--border);
+      padding: 9px 18px; border-radius: 2px; cursor: none;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .nav-btn:hover { color: var(--txt); border-color: var(--hborder); }
+
+    .page-date {
+      position: fixed;
+      right: 24px;
+      bottom: 18px;
+      z-index: 11;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--dim);
+      pointer-events: none;
+    }
+
+    /* Panels */
+    .panels { position: relative; overflow: hidden; }
+
+    .panel {
+      position: absolute; inset: 0;
+      overflow-y: auto;
+      opacity: 0; pointer-events: none;
+      transform: translateY(16px);
+      transition: opacity 0.45s var(--ease-lux), transform 0.45s var(--ease-lux);
+    }
+    .panel.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+    /* Panel inner */
+    .panel-inner {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      min-height: calc(100vh - 136px);
+    }
+
+    .panel-info {
+      padding: 52px 44px;
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      position: sticky; top: 0;
+      height: calc(100vh - 136px);
+      transition: border-color 0.5s var(--ease-lux);
+    }
+    .info-index {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 32px;
+    }
+    .info-title {
+      font-size: clamp(2.8rem, 4vw, 4.4rem);
+      font-weight: 200; letter-spacing: -0.04em; line-height: 1.0;
+      margin-bottom: 28px;
+    }
+    .info-copy {
+      font-size: 0.88rem; line-height: 1.8;
+      color: var(--dim); max-width: 240px;
+      margin-bottom: auto;
+    }
+    .info-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--dim); margin-top: 40px;
+    }
+
+    .panel-work { padding: 40px; overflow-y: auto; }
+
+    /* Shared card list */
+    .work-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .work-card {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      border-radius: 3px;
+      background: var(--card-bg);
+      transition: background 0.5s;
+      overflow: hidden;
+    }
+    .work-card-info {
+      padding: 28px 24px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      border-right: 1px solid var(--border);
+      min-height: 180px;
+    }
+    .wc-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--dim);
+    }
+    .wc-title {
+      font-size: 1.1rem; font-weight: 300;
+      letter-spacing: -0.01em; line-height: 1.2;
+      margin-top: auto;
+    }
+    .wc-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--dim); margin-top: 8px;
+    }
+    .wc-link {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--dim); text-decoration: none;
+      display: inline-block; margin-top: 10px;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .wc-link:hover { color: var(--txt); border-color: var(--hborder); }
+    .wc-link--featured {
+      color: var(--txt); border-bottom-color: var(--hborder);
+      font-size: 0.66rem; letter-spacing: 0.14em;
+      padding-bottom: 2px;
+    }
+    .wc-link--featured:hover { opacity: 0.7; }
+
+    /* Video cards (fixed height, cover) */
+    .work-card-video {
+      position: relative; overflow: hidden;
+      min-height: 220px;
+    }
+    .work-card-video video {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform 0.7s var(--ease-lux);
+    }
+    .work-card:hover .work-card-video video { transform: scale(1.04); }
+
+    /* Image cards (natural height, no crop) */
+    .work-card-image {
+      background: var(--card-bg);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+      transition: background 0.5s;
+    }
+    .work-card-image img {
+      width: 100%; height: auto;
+      display: block; object-fit: contain;
+      transition: transform 0.7s var(--ease-lux);
+    }
+    .work-card:hover .work-card-image img { transform: scale(1.02); }
+
+    /* Hover lift */
+    .work-card {
+      transition: transform 0.4s var(--ease-lux), background 0.5s;
+      position: relative; z-index: 1;
+    }
+
+    /* Grouped video card */
+    .work-card--group {
+      grid-template-columns: 200px 1fr;
+    }
+    .work-card-video-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .work-card-video-group .work-card-video {
+      min-height: 160px;
+    }
+    .wc-group-labels {
+      display: flex; flex-direction: column; gap: 4px;
+      margin-top: 12px;
+    }
+    .wc-group-labels span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.52rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--dim);
+    }
+    .wc-group-labels span::before { content: '- '; }
+
+    /* Sound control bar (button + slider) */
+    .vid-sound-bar {
+      position: absolute; bottom: 14px; right: 14px;
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 24px; padding: 7px 16px 7px 14px;
+      backdrop-filter: blur(8px);
+      opacity: 0; transition: opacity 0.3s var(--ease-lux); z-index: 3;
+    }
+    .work-card:hover .vid-sound-bar { opacity: 1; }
+
+    .vid-sound-btn {
+      background: none; border: none; color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase;
+      cursor: none; white-space: nowrap; padding: 0; line-height: 1;
+    }
+
+    .vid-vol-slider {
+      width: 80px; height: 4px;
+      -webkit-appearance: none; appearance: none;
+      background: rgba(255,255,255,0.25);
+      border-radius: 2px; outline: none; cursor: pointer;
+    }
+    .vid-vol-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 13px; height: 13px; border-radius: 50%;
+      background: #fff; cursor: pointer;
+      box-shadow: 0 0 6px rgba(255,255,255,0.5);
+    }
+    .vid-vol-slider::-moz-range-thumb {
+      width: 13px; height: 13px; border-radius: 50%;
+      background: #fff; border: none; cursor: pointer;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      html, body { overflow: auto; }
+      .shell { grid-template-rows: 56px auto 1fr; height: auto; }
+      .cursor, .cursor-ring { display: none; }
+      body { cursor: auto; }
+      .nav-btn, .tab-btn { cursor: pointer; }
+
+      nav { padding: 0 20px; height: 56px; }
+      .nav-logo img { height: 28px; }
+      .tab-bar { padding: 0 20px; height: 42px; gap: 24px; }
+      nav { justify-content: space-between; height: auto; padding: 0 20px; }
+
+      .panels { position: static; }
+      .panel { position: static; opacity: 1; pointer-events: auto; transform: none; display: none; }
+      .panel.active { display: block; }
+
+      .panel-inner { grid-template-columns: 1fr; min-height: auto; }
+      .panel-info { position: static; height: auto; padding: 28px 20px; border-right: none; border-bottom: 1px solid var(--border); }
+      .info-copy { max-width: none; }
+      .info-count { margin-top: 20px; }
+      .panel-work { padding: 20px; }
+
+      .work-card { grid-template-columns: 1fr; }
+      .work-card-info { border-right: none; border-bottom: 1px solid var(--border); min-height: auto; }
+      .work-card-video { min-height: 200px; }
+      .page-date { position: static; padding: 0 20px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <div class="shell">
+
+    <nav>
+      <a class="nav-logo" href="index.html">
+        <img src="logo/trans.png" alt="Aftercells Studio" />
+      </a>
+      <div class="nav-tabs">
+        <button class="tab-btn active" data-panel="panel-3d" type="button">3D</button>
+        <button class="tab-btn" data-panel="panel-motion" type="button">Motion</button>
+      </div>
+      <div class="nav-right">
+        <button class="nav-btn" id="btn-theme" type="button">Light</button>
+        <a class="nav-btn" href="index.html">&larr; Home</a>
+      </div>
+    </nav>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" data-panel="panel-3d" type="button">3D</button>
+      <button class="tab-btn" data-panel="panel-motion" type="button">Motion</button>
+    </div>
+
+    <div class="panels">
+
+      <!-- 3D Panel -->
+      <div class="panel active" id="panel-3d">
+        <div class="panel-inner">
+          <aside class="panel-info">
+            <p class="info-index">01 / 02</p>
+            <h2 class="info-title">3D</h2>
+          </aside>
+          <div class="panel-work">
+            <div class="work-list">
+
+              <div class="work-card">
+                <div class="work-card-info">
+                  <span class="wc-num">001</span>
+                  <div><p class="wc-title">Reentry to the evacuation day</p><p class="wc-tag">// 3D Animation</p></div>
+                </div>
+                <div class="work-card-video">
+                  <video src="videos/3D/reentry-evacuation.mp4" muted loop playsinline preload="none"></video>
+                </div>
+              </div>
+
+              <div class="work-card">
+                <div class="work-card-info">
+                  <span class="wc-num">002</span>
+                  <div>
+                    <p class="wc-title">The Discovery on the Moon That Nobody Prepared Us For</p>
+                    <p class="wc-tag">// Explainer</p>
+                    <a class="wc-link" href="https://youtu.be/piQSi6bn_Gk?si=8MLBE8vbWiKZD4vZ&t=27" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+                  </div>
+                </div>
+                <div class="work-card-video">
+                  <video src="videos/3D/moon-discovery.mp4" muted loop playsinline preload="none"></video>
+                </div>
+              </div>
+
+              <div class="work-card">
+                <div class="work-card-info">
+                  <span class="wc-num">003</span>
+                  <div>
+                    <p class="wc-title">TRY AGAIN</p>
+                    <p class="wc-tag">// Short film</p>
+                    <a class="wc-link wc-link--featured" href="https://youtu.be/d5v1dVfIiVg?si=KLKxYXjYcq2OO1nU" target="_blank" rel="noopener">Watch the full film &rarr;</a>
+                  </div>
+                </div>
+                <div class="work-card-video">
+                  <video src="videos/3D/try-again.mp4" muted loop playsinline preload="none"></video>
+                </div>
+              </div>
+
+              <div class="work-card">
+                <div class="work-card-info">
+                  <span class="wc-num">004</span>
+                  <div><p class="wc-title">THE 1975</p><p class="wc-tag">// Music visualization</p></div>
+                </div>
+                <div class="work-card-video">
+                  <video src="videos/3D/the-1975.mp4" muted loop playsinline preload="none"></video>
+                </div>
+              </div>
+
+              <div class="work-card">
+                <div class="work-card-info">
+                  <span class="wc-num">005</span>
+                  <div>
+                    <p class="wc-title">How America Found Bin Laden</p>
+                    <p class="wc-tag">// Storytelling</p>
+                    <a class="wc-link" href="https://youtu.be/Oi-J0ArLZy8?si=PBBVSPojaFGiGlr-" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+                  </div>
+                </div>
+                <div class="work-card-video">
+                  <video src="videos/3D/bin-laden.mp4" muted loop playsinline preload="none"></video>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Motion Panel -->
+      <div class="panel" id="panel-motion">
+        <div class="panel-inner">
+          <aside class="panel-info">
+            <p class="info-index">02 / 02</p>
+            <h2 class="info-title">Motion<br>Graphics</h2>
+          </aside>
+          <div class="panel-work">
+            <div class="work-list">
+
+              <div class="work-card">
+                <div class="work-card-info">
+                  <span class="wc-num">001</span>
+                  <div>
+                    <p class="wc-title">BenQ</p>
+                    <p class="wc-tag">// Brand / Commercial</p>
+                    <a class="wc-link" href="https://benqi.fi/" target="_blank" rel="noopener">benqi.fi &rarr;</a>
+                  </div>
+                </div>
+                <div class="work-card-video">
+                  <video src="videos/motion/benq-web.mp4" muted loop playsinline preload="none"></video>
+                </div>
+              </div>
+
+              <div class="work-card">
+                <div class="work-card-info">
+                  <span class="wc-num">002</span>
+                  <div>
+                    <p class="wc-title">River</p>
+                    <p class="wc-tag">// Launch Video</p>
+                    <a class="wc-link" href="https://river.inc/" target="_blank" rel="noopener">river.inc &rarr;</a>
+                  </div>
+                </div>
+                <div class="work-card-video">
+                  <video src="videos/motion/river-web.mp4" muted loop playsinline preload="none"></video>
+                </div>
+              </div>
+
+              <div class="work-card">
+                <div class="work-card-info">
+                  <span class="wc-num">003</span>
+                  <div>
+                    <p class="wc-title">Lucid</p>
+                    <p class="wc-tag">// Launch Video</p>
+                    <a class="wc-link" href="https://lucidlabs.fi/" target="_blank" rel="noopener">lucidlabs.fi &rarr;</a>
+                  </div>
+                </div>
+                <div class="work-card-video">
+                  <video src="videos/motion/lucid-web.mp4" muted loop playsinline preload="none"></video>
+                </div>
+              </div>
+
+              <div class="work-card">
+                <div class="work-card-info">
+                  <span class="wc-num">004</span>
+                  <div>
+                    <p class="wc-title">Spectra</p>
+                    <p class="wc-tag">// Launch Video</p>
+                    <a class="wc-link" href="https://www.spectra.finance/" target="_blank" rel="noopener">spectra.finance &rarr;</a>
+                  </div>
+                </div>
+                <div class="work-card-video">
+                  <video src="videos/motion/spectra-teaser.mp4" muted loop playsinline preload="none"></video>
+                </div>
+              </div>
+
+              <div class="work-card work-card--group">
+                <div class="work-card-info">
+                  <span class="wc-num">005</span>
+                  <div>
+                    <p class="wc-title">How America Detects Every Missile Launch On Earth</p>
+                    <p class="wc-tag">// 2D Motion Graphics</p>
+                    <a class="wc-link" href="https://youtu.be/qSoepoVfB7U?si=L7VqPa0pjwnZ3zX3" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+                  </div>
+                </div>
+                <div class="work-card-video-group">
+                  <div class="work-card-video"><video src="videos/motion/sam-radome/yemen-hud.mp4" muted loop playsinline preload="none"></video></div>
+                  <div class="work-card-video"><video src="videos/motion/sam-radome/missile-flyover.mp4" muted loop playsinline preload="none"></video></div>
+                  <div class="work-card-video"><video src="videos/motion/sam-radome/warning-system.mp4" muted loop playsinline preload="none"></video></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <p class="page-date" id="page-date"></p>
+
+  <script>
+  (function () {
+    /* theme */
+    const html = document.documentElement;
+    const btnTheme = document.getElementById('btn-theme');
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    const pageDate = document.getElementById('page-date');
+    const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const saved = localStorage.getItem('aftercells-theme') || 'dark';
+    html.setAttribute('data-theme', saved);
+    btnTheme.textContent = saved === 'dark' ? 'Light' : 'Dark';
+    themeColor.setAttribute('content', saved === 'dark' ? '#080808' : '#f0ede8');
+    pageDate.textContent = dateFormatter.format(new Date());
+    btnTheme.addEventListener('click', () => {
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next); localStorage.setItem('aftercells-theme', next);
+      btnTheme.textContent = next === 'dark' ? 'Light' : 'Dark';
+      themeColor.setAttribute('content', next === 'dark' ? '#080808' : '#f0ede8');
+    });
+
+    /* play/pause + sound based on visibility */
+    const thresholds = Array.from({length: 21}, (_, i) => i * 0.05);
+
+    const playObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        const video = e.target.querySelector('video');
+        if (!video) return;
+        const inActivePanel = e.target.closest('.panel') && e.target.closest('.panel').classList.contains('active');
+        if (e.isIntersecting && inActivePanel) {
+          if (video.readyState === 0) video.load();
+          video.muted = true; // always start muted
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+          video.muted = true;
+        }
+      });
+    }, { threshold: thresholds });
+
+    function makeSoundBar(videos, host) {
+      videos.forEach(v => { v.muted = true; });
+      const bar = document.createElement('div');
+      bar.className = 'vid-sound-bar';
+      const btn = document.createElement('button');
+      btn.className = 'vid-sound-btn'; btn.type = 'button'; btn.textContent = 'Unmute';
+      const slider = document.createElement('input');
+      slider.type = 'range'; slider.min = 0; slider.max = 100; slider.value = 0;
+      slider.className = 'vid-vol-slider';
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const muting = !videos[0].muted;
+        videos.forEach(v => { v.muted = muting; v.volume = muting ? 0 : (slider.value > 0 ? slider.value / 100 : 0.7); });
+        slider.value = muting ? 0 : Math.round(videos[0].volume * 100);
+        btn.textContent = muting ? 'Unmute' : 'Mute';
+        updateSliderTrack(slider);
+      });
+      slider.addEventListener('input', e => {
+        e.stopPropagation();
+        const vol = slider.value / 100;
+        videos.forEach(v => { v.volume = vol; v.muted = vol === 0; });
+        btn.textContent = vol === 0 ? 'Unmute' : 'Mute';
+        updateSliderTrack(slider);
+      });
+      slider.addEventListener('click', e => e.stopPropagation());
+      bar.appendChild(btn); bar.appendChild(slider);
+      host.appendChild(bar);
+    }
+
+    document.querySelectorAll('.work-card-video').forEach(container => {
+      const video = container.querySelector('video');
+      if (!video) return;
+      video.muted = true;
+      // grouped cards get a single shared bar - skip individual ones
+      if (!container.closest('.work-card-video-group')) {
+        makeSoundBar([video], container);
+      }
+      playObserver.observe(container);
+    });
+
+    // one shared sound bar per grouped card
+    document.querySelectorAll('.work-card-video-group').forEach(group => {
+      const videos = Array.from(group.querySelectorAll('video'));
+      group.style.position = 'relative';
+      makeSoundBar(videos, group);
+    });
+
+    function updateSliderTrack(sl) {
+      const pct = sl.value + '%';
+      sl.style.background = `linear-gradient(to right, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.9) ${pct}, rgba(255,255,255,0.2) ${pct})`;
+    }
+    // init track style on all sliders
+    document.querySelectorAll('.vid-vol-slider').forEach(updateSliderTrack);
+
+    /* tabs - pause & mute all videos in leaving panel */
+    const panels = document.querySelectorAll('.panel');
+    function switchPanel(id) {
+      panels.forEach(p => {
+        p.classList.remove('active');
+        p.querySelectorAll('video').forEach(v => { v.pause(); v.muted = true; });
+      });
+      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('.tab-btn').forEach(t =>
+        t.classList.toggle('active', t.dataset.panel === id)
+      );
+    }
+    document.querySelectorAll('.tab-btn').forEach(t =>
+      t.addEventListener('click', () => switchPanel(t.dataset.panel))
+    );
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) return;
+      document.querySelectorAll('video').forEach(v => { v.pause(); v.muted = true; });
+    });
+
+    /* cursor */
+    const cursor = document.getElementById('cursor');
+    const ring   = document.getElementById('cursorRing');
+    let mx = -200, my = -200, rx = -200, ry = -200;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    document.querySelectorAll('.work-card').forEach(el => {
+      el.addEventListener('mouseenter', () => ring.classList.add('expand'));
+      el.addEventListener('mouseleave', () => ring.classList.remove('expand'));
+    });
+    (function tick() {
+      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+      rx += (mx - rx) * 0.1; ry += (my - ry) * 0.1;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(tick);
+    })();
+  })();
+  </script>
+</body>
+</html>
+
