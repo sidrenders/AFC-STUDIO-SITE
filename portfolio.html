@@ -6,7 +6,7 @@
   <title>Portfolio - Aftercells Studio</title>
   <meta name="description" content="Aftercells Studio portfolio - 3D animation, motion graphics, and brand films for studios and agencies." />
   <meta property="og:title" content="Portfolio - Aftercells Studio" />
-  <meta property="og:description" content="3D &amp; Motion Graphics for Studios &amp; Agencies. Cinematic animation and motion design." />
+  <meta property="og:description" content="3D &amp; Motion Graphics for Studios &amp; Agencies." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="logo/trans.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -331,10 +331,13 @@
       body { cursor: auto; }
       .nav-btn, .tab-btn { cursor: pointer; }
 
-      nav { padding: 0 20px; height: 56px; }
+      nav { padding: max(12px, env(safe-area-inset-top)) 20px 12px; height: auto; }
       .nav-logo img { height: 28px; }
-      .tab-bar { padding: 0 20px; height: 42px; gap: 24px; }
-      nav { justify-content: space-between; height: auto; padding: 0 20px; }
+      .tab-bar { padding: 0 20px; min-height: 46px; gap: 24px; overflow-x: auto; }
+      nav { justify-content: space-between; }
+      .nav-right { gap: 8px; }
+      .nav-btn { padding: 10px 14px; font-size: 0.66rem; }
+      .tab-btn { padding: 10px 0; }
 
       .panels { position: static; }
       .panel { position: static; opacity: 1; pointer-events: auto; transform: none; display: none; }
@@ -342,6 +345,7 @@
 
       .panel-inner { grid-template-columns: 1fr; min-height: auto; }
       .panel-info { position: static; height: auto; padding: 28px 20px; border-right: none; border-bottom: 1px solid var(--border); }
+      .info-title { font-size: clamp(2.1rem, 12vw, 3.2rem); }
       .info-copy { max-width: none; }
       .info-count { margin-top: 20px; }
       .panel-work { padding: 20px; }
@@ -349,7 +353,10 @@
       .work-card { grid-template-columns: 1fr; }
       .work-card-info { border-right: none; border-bottom: 1px solid var(--border); min-height: auto; }
       .work-card-video { min-height: 200px; }
-      .page-date { position: static; padding: 0 20px 20px; }
+      .work-card-video-group { grid-template-columns: 1fr; }
+      .work-card-video-group .work-card-video { min-height: 180px; }
+      .vid-sound-bar { opacity: 1; right: 10px; bottom: 10px; padding: 7px 12px; }
+      .page-date { position: static; padding: 0 20px calc(20px + env(safe-area-inset-bottom)); }
     }
   </style>
 </head>
