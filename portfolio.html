@@ -40,13 +40,14 @@
       --card-bg: #e8e5e0;
     }
 
-    html, body { width: 100%; height: 100%; overflow: hidden; }
+    html, body { width: 100%; min-height: 100%; overflow-x: hidden; }
 
     body {
       background: var(--bg); color: var(--txt);
       font-family: 'Manrope', sans-serif;
       -webkit-font-smoothing: antialiased;
       cursor: none;
+      overflow-y: auto;
       transition: background 0.5s var(--ease-lux), color 0.5s var(--ease-lux);
     }
 
@@ -71,8 +72,8 @@
     /* Shell */
     .shell {
       display: grid;
-      grid-template-rows: 88px auto 1fr;
-      height: 100vh;
+      grid-template-rows: 88px 1fr;
+      min-height: 100vh;
     }
 
     /* Nav */
@@ -94,27 +95,6 @@
       height: 44px; width: auto; display: block;
       filter: var(--logo); transition: filter 0.5s var(--ease-lux);
     }
-
-    /* centred tab strip */
-    .nav-tabs { display: none; }
-
-    /* Tab bar (below nav) */
-    .tab-bar {
-      display: flex; align-items: center; justify-content: center; gap: 48px;
-      padding: 0 48px;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg);
-      height: 48px;
-      transition: background 0.5s var(--ease-lux), border-color 0.5s var(--ease-lux);
-    }
-    .tab-btn {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
-      background: none; border: none; border-bottom: 1px solid transparent;
-      color: var(--dim); padding: 4px 0; cursor: none;
-      transition: color 0.25s var(--ease-lux), border-color 0.25s var(--ease-lux);
-    }
-    .tab-btn.active { color: var(--txt); border-bottom-color: var(--txt); }
 
     .nav-right { display: flex; align-items: center; gap: 10px; }
     .nav-btn {
@@ -140,31 +120,25 @@
       pointer-events: none;
     }
 
-    /* Panels */
-    .panels { position: relative; overflow: hidden; }
-
-    .panel {
-      position: absolute; inset: 0;
-      overflow-y: auto;
-      opacity: 0; pointer-events: none;
-      transform: translateY(16px);
-      transition: opacity 0.45s var(--ease-lux), transform 0.45s var(--ease-lux);
+    .portfolio-page {
+      display: flex;
+      flex-direction: column;
     }
-    .panel.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
-    /* Panel inner */
-    .panel-inner {
+    .portfolio-section {
       display: grid;
       grid-template-columns: 320px 1fr;
-      min-height: calc(100vh - 136px);
+      min-height: calc(100vh - 88px);
+      border-bottom: 1px solid var(--border);
     }
 
-    .panel-info {
+    .section-info {
       padding: 52px 44px;
       border-right: 1px solid var(--border);
       display: flex; flex-direction: column;
       position: sticky; top: 0;
-      height: calc(100vh - 136px);
+      align-self: start;
+      min-height: calc(100vh - 88px);
       transition: border-color 0.5s var(--ease-lux);
     }
     .info-index {
@@ -188,7 +162,7 @@
       color: var(--dim); margin-top: 40px;
     }
 
-    .panel-work { padding: 40px; overflow-y: auto; }
+    .section-work { padding: 40px; }
 
     /* Shared card list */
     .work-list { display: flex; flex-direction: column; gap: 10px; }
@@ -332,30 +306,24 @@
     /* Mobile */
     @media (max-width: 768px) {
       html, body { overflow: auto; }
-      .shell { grid-template-rows: 56px auto 1fr; height: auto; }
+      .shell { grid-template-rows: 56px 1fr; height: auto; }
       .cursor, .cursor-ring { display: none; }
       body { cursor: auto; }
-      .nav-btn, .tab-btn { cursor: pointer; }
+      .nav-btn { cursor: pointer; }
 
       nav { padding: max(12px, env(safe-area-inset-top)) 20px 12px; height: auto; }
       .nav-logo { gap: 8px; }
       .nav-logo img { height: 24px; }
-      .tab-bar { padding: 0 20px; min-height: 46px; gap: 24px; overflow-x: auto; }
       nav { justify-content: space-between; }
       .nav-right { gap: 8px; }
       .nav-btn { padding: 10px 14px; font-size: 0.66rem; }
-      .tab-btn { padding: 10px 0; }
 
-      .panels { position: static; }
-      .panel { position: static; opacity: 1; pointer-events: auto; transform: none; display: none; }
-      .panel.active { display: block; }
-
-      .panel-inner { grid-template-columns: 1fr; min-height: auto; }
-      .panel-info { position: static; height: auto; padding: 28px 20px; border-right: none; border-bottom: 1px solid var(--border); }
+      .portfolio-section { grid-template-columns: 1fr; min-height: auto; }
+      .section-info { position: static; min-height: auto; padding: 28px 20px; border-right: none; border-bottom: 1px solid var(--border); }
       .info-title { font-size: clamp(2.1rem, 12vw, 3.2rem); }
       .info-copy { max-width: none; }
       .info-count { margin-top: 20px; }
-      .panel-work { padding: 20px; }
+      .section-work { padding: 20px; }
 
       .work-card { grid-template-columns: 1fr; }
       .work-card-info { border-right: none; border-bottom: 1px solid var(--border); min-height: auto; }
@@ -379,31 +347,20 @@
       <a class="nav-logo" href="index.html">
         <img src="logo/trans.png" alt="Aftercells Studio" />
       </a>
-      <div class="nav-tabs">
-        <button class="tab-btn active" data-panel="panel-3d" type="button">3D</button>
-        <button class="tab-btn" data-panel="panel-motion" type="button">Motion</button>
-      </div>
       <div class="nav-right">
         <button class="nav-btn" id="btn-theme" type="button">Light</button>
         <a class="nav-btn" href="index.html">&larr; Home</a>
       </div>
     </nav>
 
-    <div class="tab-bar">
-      <button class="tab-btn active" data-panel="panel-3d" type="button">3D</button>
-      <button class="tab-btn" data-panel="panel-motion" type="button">Motion</button>
-    </div>
+    <main class="portfolio-page">
 
-    <div class="panels">
-
-      <!-- 3D Panel -->
-      <div class="panel active" id="panel-3d">
-        <div class="panel-inner">
-          <aside class="panel-info">
+      <section class="portfolio-section" id="section-3d">
+        <aside class="section-info">
             <p class="info-index">01 / 02</p>
             <h2 class="info-title">3D</h2>
-          </aside>
-          <div class="panel-work">
+        </aside>
+        <div class="section-work">
             <div class="work-list">
 
               <div class="work-card">
@@ -479,18 +436,15 @@
               </div>
 
             </div>
-          </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Motion Panel -->
-      <div class="panel" id="panel-motion">
-        <div class="panel-inner">
-          <aside class="panel-info">
+      <section class="portfolio-section" id="section-motion">
+        <aside class="section-info">
             <p class="info-index">02 / 02</p>
             <h2 class="info-title">Motion<br>Graphics</h2>
-          </aside>
-          <div class="panel-work">
+        </aside>
+        <div class="section-work">
             <div class="work-list">
 
               <div class="work-card">
@@ -566,11 +520,9 @@
               </div>
 
             </div>
-          </div>
         </div>
-      </div>
-
-    </div>
+      </section>
+    </main>
   </div>
   <p class="page-date" id="page-date"></p>
 
@@ -601,8 +553,7 @@
       entries.forEach(e => {
         const video = e.target.querySelector('video');
         if (!video) return;
-        const inActivePanel = e.target.closest('.panel') && e.target.closest('.panel').classList.contains('active');
-        if (e.isIntersecting && inActivePanel) {
+        if (e.isIntersecting) {
           if (video.readyState === 0) video.load();
           video.muted = true; // always start muted
           video.play().catch(() => {});
@@ -684,7 +635,7 @@
       makeSoundBar(videos, group);
     });
 
-    document.querySelectorAll('.panel.active video').forEach((video, index) => {
+    document.querySelectorAll('.work-card-video video').forEach((video, index) => {
       if (index < 3 && video.readyState === 0) video.load();
     });
 
@@ -695,21 +646,6 @@
     // init track style on all sliders
     document.querySelectorAll('.vid-vol-slider').forEach(updateSliderTrack);
 
-    /* tabs - pause & mute all videos in leaving panel */
-    const panels = document.querySelectorAll('.panel');
-    function switchPanel(id) {
-      panels.forEach(p => {
-        p.classList.remove('active');
-        p.querySelectorAll('video').forEach(v => { v.pause(); v.muted = true; });
-      });
-      document.getElementById(id).classList.add('active');
-      document.querySelectorAll('.tab-btn').forEach(t =>
-        t.classList.toggle('active', t.dataset.panel === id)
-      );
-    }
-    document.querySelectorAll('.tab-btn').forEach(t =>
-      t.addEventListener('click', () => switchPanel(t.dataset.panel))
-    );
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) return;
       document.querySelectorAll('video').forEach(v => { v.pause(); v.muted = true; });
