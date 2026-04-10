@@ -121,25 +121,17 @@
     }
 
     .portfolio-page {
+      padding: 32px 40px 56px;
+    }
+
+    .portfolio-intro {
       display: flex;
-      flex-direction: column;
-    }
-
-    .portfolio-section {
-      display: grid;
-      grid-template-columns: 320px 1fr;
-      min-height: calc(100vh - 88px);
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 28px;
+      margin-bottom: 28px;
       border-bottom: 1px solid var(--border);
-    }
-
-    .section-info {
-      padding: 52px 44px;
-      border-right: 1px solid var(--border);
-      display: flex; flex-direction: column;
-      position: sticky; top: 0;
-      align-self: start;
-      min-height: calc(100vh - 88px);
-      transition: border-color 0.5s var(--ease-lux);
     }
     .info-index {
       font-family: 'JetBrains Mono', monospace;
@@ -162,7 +154,14 @@
       color: var(--dim); margin-top: 40px;
     }
 
-    .section-work { padding: 40px; }
+    .portfolio-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--dim);
+      max-width: 320px;
+      line-height: 1.8;
+      text-align: right;
+    }
 
     /* Shared card list */
     .work-list { display: flex; flex-direction: column; gap: 10px; }
@@ -318,12 +317,10 @@
       .nav-right { gap: 8px; }
       .nav-btn { padding: 10px 14px; font-size: 0.66rem; }
 
-      .portfolio-section { grid-template-columns: 1fr; min-height: auto; }
-      .section-info { position: static; min-height: auto; padding: 28px 20px; border-right: none; border-bottom: 1px solid var(--border); }
+      .portfolio-page { padding: 20px 20px 28px; }
+      .portfolio-intro { display: block; padding-bottom: 20px; margin-bottom: 20px; }
       .info-title { font-size: clamp(2.1rem, 12vw, 3.2rem); }
-      .info-copy { max-width: none; }
-      .info-count { margin-top: 20px; }
-      .section-work { padding: 20px; }
+      .portfolio-meta { max-width: none; text-align: left; margin-top: 12px; }
 
       .work-card { grid-template-columns: 1fr; }
       .work-card-info { border-right: none; border-bottom: 1px solid var(--border); min-height: auto; }
@@ -354,174 +351,149 @@
     </nav>
 
     <main class="portfolio-page">
-
-      <section class="portfolio-section" id="section-3d">
-        <aside class="section-info">
-            <p class="info-index">01 / 02</p>
-            <h2 class="info-title">3D</h2>
-        </aside>
-        <div class="section-work">
-            <div class="work-list">
-
-              <div class="work-card">
-                <div class="work-card-info">
-                  <span class="wc-num">001</span>
-                  <div><p class="wc-title">Light Phone</p><p class="wc-tag">// Product visualization</p></div>
-                </div>
-                <div class="work-card-video">
-                  <video src="videos/3D/lightphone.mp4" muted loop playsinline preload="none"></video>
-                </div>
-              </div>
-
-              <div class="work-card">
-                <div class="work-card-info">
-                  <span class="wc-num">002</span>
-                  <div><p class="wc-title">Reentry to the evacuation day</p><p class="wc-tag">// 3D Animation</p></div>
-                </div>
-                <div class="work-card-video">
-                  <video src="videos/3D/reentry-evacuation.mp4" muted loop playsinline preload="none"></video>
-                </div>
-              </div>
-
-              <div class="work-card">
-                <div class="work-card-info">
-                  <span class="wc-num">003</span>
-                  <div>
-                    <p class="wc-title">The Discovery on the Moon That Nobody Prepared Us For</p>
-                    <p class="wc-tag">// Explainer</p>
-                    <a class="wc-link" href="https://youtu.be/piQSi6bn_Gk?si=8MLBE8vbWiKZD4vZ&t=27" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
-                  </div>
-                </div>
-                <div class="work-card-video">
-                  <video src="videos/3D/moon-discovery.mp4" muted loop playsinline preload="none"></video>
-                </div>
-              </div>
-
-              <div class="work-card">
-                <div class="work-card-info">
-                  <span class="wc-num">004</span>
-                  <div>
-                    <p class="wc-title">TRY AGAIN</p>
-                    <p class="wc-tag">// Short film</p>
-                    <a class="wc-link wc-link--featured" href="https://youtu.be/d5v1dVfIiVg?si=KLKxYXjYcq2OO1nU" target="_blank" rel="noopener">Watch the full film &rarr;</a>
-                  </div>
-                </div>
-                <div class="work-card-video">
-                  <video src="videos/3D/try-again.mp4" muted loop playsinline preload="none"></video>
-                </div>
-              </div>
-
-              <div class="work-card">
-                <div class="work-card-info">
-                  <span class="wc-num">005</span>
-                  <div><p class="wc-title">THE 1975</p><p class="wc-tag">// Music visualization</p></div>
-                </div>
-                <div class="work-card-video">
-                  <video src="videos/3D/the-1975.mp4" muted loop playsinline preload="none"></video>
-                </div>
-              </div>
-
-              <div class="work-card">
-                <div class="work-card-info">
-                  <span class="wc-num">006</span>
-                  <div>
-                    <p class="wc-title">How America Found Bin Laden</p>
-                    <p class="wc-tag">// Storytelling</p>
-                    <a class="wc-link" href="https://youtu.be/Oi-J0ArLZy8?si=PBBVSPojaFGiGlr-" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
-                  </div>
-                </div>
-                <div class="work-card-video">
-                  <video src="videos/3D/bin-laden.mp4" muted loop playsinline preload="none"></video>
-                </div>
-              </div>
-
-            </div>
+      <section class="portfolio-intro">
+        <div>
+          <p class="info-index">Selected Work</p>
+          <h1 class="info-title">Portfolio</h1>
         </div>
+        <p class="portfolio-meta">A mixed selection of films, launch visuals, and motion-led brand work.</p>
       </section>
 
-      <section class="portfolio-section" id="section-motion">
-        <aside class="section-info">
-            <p class="info-index">02 / 02</p>
-            <h2 class="info-title">Motion<br>Graphics</h2>
-        </aside>
-        <div class="section-work">
-            <div class="work-list">
-
-              <div class="work-card">
-                <div class="work-card-info">
-                  <span class="wc-num">001</span>
-                  <div>
-                    <p class="wc-title">BenQ</p>
-                    <p class="wc-tag">// Brand / Commercial</p>
-                    <a class="wc-link" href="https://benqi.fi/" target="_blank" rel="noopener">benqi.fi &rarr;</a>
-                  </div>
-                </div>
-                <div class="work-card-video">
-                  <video src="videos/motion/benq-web.mp4" muted loop playsinline preload="none"></video>
-                </div>
-              </div>
-
-              <div class="work-card">
-                <div class="work-card-info">
-                  <span class="wc-num">002</span>
-                  <div>
-                    <p class="wc-title">River</p>
-                    <p class="wc-tag">// Launch Video</p>
-                    <a class="wc-link" href="https://river.inc/" target="_blank" rel="noopener">river.inc &rarr;</a>
-                  </div>
-                </div>
-                <div class="work-card-video">
-                  <video src="videos/motion/river-web.mp4" muted loop playsinline preload="none" data-seamless-loop="0.12"></video>
-                </div>
-              </div>
-
-              <div class="work-card">
-                <div class="work-card-info">
-                  <span class="wc-num">003</span>
-                  <div>
-                    <p class="wc-title">Lucid</p>
-                    <p class="wc-tag">// Launch Video</p>
-                    <a class="wc-link" href="https://lucidlabs.fi/" target="_blank" rel="noopener">lucidlabs.fi &rarr;</a>
-                  </div>
-                </div>
-                <div class="work-card-video">
-                  <video src="videos/motion/lucid-web.mp4" muted loop playsinline preload="none"></video>
-                </div>
-              </div>
-
-              <div class="work-card">
-                <div class="work-card-info">
-                  <span class="wc-num">004</span>
-                  <div>
-                    <p class="wc-title">Spectra</p>
-                    <p class="wc-tag">// Launch Video</p>
-                    <a class="wc-link" href="https://www.spectra.finance/" target="_blank" rel="noopener">spectra.finance &rarr;</a>
-                  </div>
-                </div>
-                <div class="work-card-video">
-                  <video src="videos/motion/spectra-teaser.mp4" muted loop playsinline preload="none"></video>
-                </div>
-              </div>
-
-              <div class="work-card work-card--group">
-                <div class="work-card-info">
-                  <span class="wc-num">005</span>
-                  <div>
-                    <p class="wc-title">How America Detects Every Missile Launch On Earth</p>
-                    <p class="wc-tag">// 2D Motion Graphics</p>
-                    <a class="wc-link" href="https://youtu.be/qSoepoVfB7U?si=L7VqPa0pjwnZ3zX3" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
-                  </div>
-                </div>
-                <div class="work-card-video-group">
-                  <div class="work-card-video"><video src="videos/motion/sam-radome/yemen-hud.mp4" muted loop playsinline preload="none"></video></div>
-                  <div class="work-card-video"><video src="videos/motion/sam-radome/missile-flyover.mp4" muted loop playsinline preload="none"></video></div>
-                  <div class="work-card-video"><video src="videos/motion/sam-radome/warning-system.mp4" muted loop playsinline preload="none"></video></div>
-                </div>
-              </div>
-
-            </div>
+      <div class="work-list">
+        <div class="work-card">
+          <div class="work-card-info">
+            <span class="wc-num">001</span>
+            <div><p class="wc-title">Reentry to the evacuation day</p><p class="wc-tag">// 3D Animation</p></div>
+          </div>
+          <div class="work-card-video">
+            <video src="videos/3D/reentry-evacuation.mp4" muted loop playsinline preload="none"></video>
+          </div>
         </div>
-      </section>
+
+        <div class="work-card">
+          <div class="work-card-info">
+            <span class="wc-num">002</span>
+            <div>
+              <p class="wc-title">BenQ</p>
+              <p class="wc-tag">// Brand / Commercial</p>
+              <a class="wc-link" href="https://benqi.fi/" target="_blank" rel="noopener">benqi.fi &rarr;</a>
+            </div>
+          </div>
+          <div class="work-card-video">
+            <video src="videos/motion/benq-web.mp4" muted loop playsinline preload="none"></video>
+          </div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-card-info">
+            <span class="wc-num">003</span>
+            <div>
+              <p class="wc-title">The Discovery on the Moon That Nobody Prepared Us For</p>
+              <p class="wc-tag">// Explainer</p>
+              <a class="wc-link" href="https://youtu.be/piQSi6bn_Gk?si=8MLBE8vbWiKZD4vZ&t=27" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+            </div>
+          </div>
+          <div class="work-card-video">
+            <video src="videos/3D/moon-discovery.mp4" muted loop playsinline preload="none"></video>
+          </div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-card-info">
+            <span class="wc-num">004</span>
+            <div>
+              <p class="wc-title">River</p>
+              <p class="wc-tag">// Launch Video</p>
+              <a class="wc-link" href="https://river.inc/" target="_blank" rel="noopener">river.inc &rarr;</a>
+            </div>
+          </div>
+          <div class="work-card-video">
+            <video src="videos/motion/river-web.mp4" muted loop playsinline preload="none" data-seamless-loop="0.12"></video>
+          </div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-card-info">
+            <span class="wc-num">005</span>
+            <div>
+              <p class="wc-title">TRY AGAIN</p>
+              <p class="wc-tag">// Short film</p>
+              <a class="wc-link wc-link--featured" href="https://youtu.be/d5v1dVfIiVg?si=KLKxYXjYcq2OO1nU" target="_blank" rel="noopener">Watch the full film &rarr;</a>
+            </div>
+          </div>
+          <div class="work-card-video">
+            <video src="videos/3D/try-again.mp4" muted loop playsinline preload="none"></video>
+          </div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-card-info">
+            <span class="wc-num">006</span>
+            <div>
+              <p class="wc-title">Lucid</p>
+              <p class="wc-tag">// Launch Video</p>
+              <a class="wc-link" href="https://lucidlabs.fi/" target="_blank" rel="noopener">lucidlabs.fi &rarr;</a>
+            </div>
+          </div>
+          <div class="work-card-video">
+            <video src="videos/motion/lucid-web.mp4" muted loop playsinline preload="none"></video>
+          </div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-card-info">
+            <span class="wc-num">007</span>
+            <div><p class="wc-title">THE 1975</p><p class="wc-tag">// Music visualization</p></div>
+          </div>
+          <div class="work-card-video">
+            <video src="videos/3D/the-1975.mp4" muted loop playsinline preload="none"></video>
+          </div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-card-info">
+            <span class="wc-num">008</span>
+            <div>
+              <p class="wc-title">Spectra</p>
+              <p class="wc-tag">// Launch Video</p>
+              <a class="wc-link" href="https://www.spectra.finance/" target="_blank" rel="noopener">spectra.finance &rarr;</a>
+            </div>
+          </div>
+          <div class="work-card-video">
+            <video src="videos/motion/spectra-teaser.mp4" muted loop playsinline preload="none"></video>
+          </div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-card-info">
+            <span class="wc-num">009</span>
+            <div>
+              <p class="wc-title">How America Found Bin Laden</p>
+              <p class="wc-tag">// Storytelling</p>
+              <a class="wc-link" href="https://youtu.be/Oi-J0ArLZy8?si=PBBVSPojaFGiGlr-" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+            </div>
+          </div>
+          <div class="work-card-video">
+            <video src="videos/3D/bin-laden.mp4" muted loop playsinline preload="none"></video>
+          </div>
+        </div>
+
+        <div class="work-card work-card--group">
+          <div class="work-card-info">
+            <span class="wc-num">010</span>
+            <div>
+              <p class="wc-title">How America Detects Every Missile Launch On Earth</p>
+              <p class="wc-tag">// 2D Motion Graphics</p>
+              <a class="wc-link" href="https://youtu.be/qSoepoVfB7U?si=L7VqPa0pjwnZ3zX3" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+            </div>
+          </div>
+          <div class="work-card-video-group">
+            <div class="work-card-video"><video src="videos/motion/sam-radome/yemen-hud.mp4" muted loop playsinline preload="none"></video></div>
+            <div class="work-card-video"><video src="videos/motion/sam-radome/missile-flyover.mp4" muted loop playsinline preload="none"></video></div>
+            <div class="work-card-video"><video src="videos/motion/sam-radome/warning-system.mp4" muted loop playsinline preload="none"></video></div>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
   <p class="page-date" id="page-date"></p>
