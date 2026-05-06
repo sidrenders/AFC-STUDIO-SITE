@@ -206,6 +206,13 @@
       transition: color 0.2s, border-color 0.2s;
     }
     .wc-link:hover { color: var(--txt); border-color: var(--hborder); }
+    .wc-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin-top: 10px;
+    }
+    .wc-links .wc-link { margin-top: 0; }
     .wc-link--featured {
       color: var(--txt); border-bottom-color: var(--hborder);
       font-size: 0.66rem; letter-spacing: 0.14em;
@@ -223,7 +230,13 @@
       object-fit: cover; display: block;
       transition: transform 0.7s var(--ease-lux);
     }
+    .work-card-video iframe {
+      width: 100%; height: 100%;
+      border: 0; display: block;
+      transition: transform 0.7s var(--ease-lux);
+    }
     .work-card:hover .work-card-video video { transform: scale(1.04); }
+    .work-card:hover .work-card-video iframe { transform: scale(1.01); }
 
     /* Image cards (natural height, no crop) */
     .work-card-image {
@@ -328,6 +341,7 @@
       .work-card-info { border-right: none; border-bottom: 1px solid var(--border); min-height: auto; }
       .work-card-video { display: flex; flex-direction: column; min-height: 280px; }
       .work-card-video video { flex: 1; min-height: 220px; }
+      .work-card-video iframe { flex: 1; min-height: 220px; }
       .work-card-video-group { display: flex; flex-direction: column; gap: 10px; }
       .work-card-video-group .work-card-video { min-height: 220px; }
       .vid-sound-bar { position: static; opacity: 1; margin: 10px 10px 12px auto; padding: 7px 12px; }
@@ -349,6 +363,7 @@
       </a>
       <div class="nav-right">
         <button class="nav-btn" id="btn-theme" type="button">Light</button>
+        <a class="nav-btn" id="btn-all-work" href="/portfolio" hidden>All Work</a>
         <a class="nav-btn" href="/">&larr; Home</a>
       </div>
     </nav>
@@ -356,20 +371,47 @@
     <main class="portfolio-page">
       <section class="portfolio-intro">
         <div>
-          <p class="info-index">Selected Work</p>
-          <h1 class="info-title">Portfolio</h1>
+          <p class="info-index" id="portfolio-index">Selected Work</p>
+          <h1 class="info-title" id="portfolio-title">Portfolio</h1>
         </div>
-        <p class="portfolio-meta">A mixed selection of films, launch visuals, and motion-led brand work.</p>
+        <p class="portfolio-meta" id="portfolio-meta">A mixed selection of films, launch visuals, and motion-led brand work.</p>
       </section>
 
       <div class="work-list">
-        <div class="work-card">
+        <div class="work-card" data-work="studio-ojas" data-title="Studio Ojas Motion Design Reel 2026">
           <div class="work-card-info">
             <span class="wc-num">001</span>
             <div>
+              <p class="wc-title">Studio Ojas Motion Design Reel 2026</p>
+              <p class="wc-tag">// Motion Design Reel</p>
+              <div class="wc-links">
+                <a class="wc-link" href="https://vimeo.com/1168540088?fl=pl&fe=ti" target="_blank" rel="noopener">Watch on Vimeo &rarr;</a>
+                <a class="wc-link" data-share-link href="/portfolio?work=studio-ojas">Share Link &rarr;</a>
+              </div>
+            </div>
+          </div>
+          <div class="work-card-video">
+            <iframe
+              src="https://player.vimeo.com/video/1168540088?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=122963"
+              allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              title="Studio Ojas Motion Design Reel 2026"
+              loading="lazy"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </div>
+
+        <div class="work-card" data-work="benq" data-title="BenQ">
+          <div class="work-card-info">
+            <span class="wc-num">002</span>
+            <div>
               <p class="wc-title">BenQ</p>
               <p class="wc-tag">// Brand / Commercial</p>
-              <a class="wc-link" href="https://benqi.fi/" target="_blank" rel="noopener">benqi.fi &rarr;</a>
+              <div class="wc-links">
+                <a class="wc-link" href="https://benqi.fi/" target="_blank" rel="noopener">benqi.fi &rarr;</a>
+                <a class="wc-link" data-share-link href="/portfolio?work=benq">Share Link &rarr;</a>
+              </div>
             </div>
           </div>
           <div class="work-card-video">
@@ -377,13 +419,16 @@
           </div>
         </div>
 
-        <div class="work-card">
+        <div class="work-card" data-work="spectra" data-title="Spectra">
           <div class="work-card-info">
-            <span class="wc-num">002</span>
+            <span class="wc-num">003</span>
             <div>
               <p class="wc-title">Spectra</p>
               <p class="wc-tag">// Launch Video</p>
-              <a class="wc-link" href="https://www.spectra.finance/" target="_blank" rel="noopener">spectra.finance &rarr;</a>
+              <div class="wc-links">
+                <a class="wc-link" href="https://www.spectra.finance/" target="_blank" rel="noopener">spectra.finance &rarr;</a>
+                <a class="wc-link" data-share-link href="/portfolio?work=spectra">Share Link &rarr;</a>
+              </div>
             </div>
           </div>
           <div class="work-card-video">
@@ -391,13 +436,50 @@
           </div>
         </div>
 
-        <div class="work-card">
+        <div class="work-card" data-work="lucid" data-title="Lucid">
           <div class="work-card-info">
-            <span class="wc-num">003</span>
+            <span class="wc-num">004</span>
+            <div>
+              <p class="wc-title">Lucid</p>
+              <p class="wc-tag">// Launch Video</p>
+              <div class="wc-links">
+                <a class="wc-link" href="https://lucidlabs.fi/" target="_blank" rel="noopener">lucidlabs.fi &rarr;</a>
+                <a class="wc-link" data-share-link href="/portfolio?work=lucid">Share Link &rarr;</a>
+              </div>
+            </div>
+          </div>
+          <div class="work-card-video">
+            <video src="videos/motion/lucid-web.mp4" muted loop playsinline preload="none"></video>
+          </div>
+        </div>
+
+        <div class="work-card" data-work="river" data-title="River">
+          <div class="work-card-info">
+            <span class="wc-num">005</span>
+            <div>
+              <p class="wc-title">River</p>
+              <p class="wc-tag">// Launch Video</p>
+              <div class="wc-links">
+                <a class="wc-link" href="https://river.inc/" target="_blank" rel="noopener">river.inc &rarr;</a>
+                <a class="wc-link" data-share-link href="/portfolio?work=river">Share Link &rarr;</a>
+              </div>
+            </div>
+          </div>
+          <div class="work-card-video">
+            <video src="videos/motion/river-web.mp4" muted loop playsinline preload="none" data-seamless-loop="0.12"></video>
+          </div>
+        </div>
+
+        <div class="work-card" data-work="moon-discovery" data-title="The Discovery on the Moon That Nobody Prepared Us For">
+          <div class="work-card-info">
+            <span class="wc-num">006</span>
             <div>
               <p class="wc-title">The Discovery on the Moon That Nobody Prepared Us For</p>
               <p class="wc-tag">// Explainer</p>
-              <a class="wc-link" href="https://youtu.be/piQSi6bn_Gk?si=8MLBE8vbWiKZD4vZ&t=27" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+              <div class="wc-links">
+                <a class="wc-link" href="https://youtu.be/piQSi6bn_Gk?si=8MLBE8vbWiKZD4vZ&t=27" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+                <a class="wc-link" data-share-link href="/portfolio?work=moon-discovery">Share Link &rarr;</a>
+              </div>
             </div>
           </div>
           <div class="work-card-video">
@@ -405,12 +487,15 @@
           </div>
         </div>
 
-        <div class="work-card">
+        <div class="work-card" data-work="reentry" data-title="Reentry to the evacuation day">
           <div class="work-card-info">
-            <span class="wc-num">004</span>
+            <span class="wc-num">007</span>
             <div>
               <p class="wc-title">Reentry to the evacuation day</p>
               <p class="wc-tag">// 3D Animation</p>
+              <div class="wc-links">
+                <a class="wc-link" data-share-link href="/portfolio?work=reentry">Share Link &rarr;</a>
+              </div>
             </div>
           </div>
           <div class="work-card-video">
@@ -418,13 +503,16 @@
           </div>
         </div>
 
-        <div class="work-card">
+        <div class="work-card" data-work="bin-laden" data-title="How America Found Bin Laden">
           <div class="work-card-info">
-            <span class="wc-num">005</span>
+            <span class="wc-num">008</span>
             <div>
               <p class="wc-title">How America Found Bin Laden</p>
               <p class="wc-tag">// Storytelling</p>
-              <a class="wc-link" href="https://youtu.be/Oi-J0ArLZy8?si=PBBVSPojaFGiGlr-" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+              <div class="wc-links">
+                <a class="wc-link" href="https://youtu.be/Oi-J0ArLZy8?si=PBBVSPojaFGiGlr-" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+                <a class="wc-link" data-share-link href="/portfolio?work=bin-laden">Share Link &rarr;</a>
+              </div>
             </div>
           </div>
           <div class="work-card-video">
@@ -441,8 +529,13 @@
     /* theme */
     const html = document.documentElement;
     const btnTheme = document.getElementById('btn-theme');
+    const btnAllWork = document.getElementById('btn-all-work');
     const themeColor = document.querySelector('meta[name="theme-color"]');
     const pageDate = document.getElementById('page-date');
+    const portfolioIndex = document.getElementById('portfolio-index');
+    const portfolioTitle = document.getElementById('portfolio-title');
+    const portfolioMeta = document.getElementById('portfolio-meta');
+    const workCards = Array.from(document.querySelectorAll('.work-card'));
     const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const saved = localStorage.getItem('aftercells-theme') || 'dark';
     html.setAttribute('data-theme', saved);
@@ -455,6 +548,27 @@
       btnTheme.textContent = next === 'dark' ? 'Light' : 'Dark';
       themeColor.setAttribute('content', next === 'dark' ? '#080808' : '#f0ede8');
     });
+
+    const portfolioPath = window.location.pathname;
+    document.querySelectorAll('[data-share-link]').forEach(link => {
+      const card = link.closest('.work-card');
+      if (!card) return;
+      link.href = `${portfolioPath}?work=${card.dataset.work}`;
+    });
+
+    const selectedWork = new URLSearchParams(window.location.search).get('work');
+    if (selectedWork) {
+      const selectedCard = workCards.find(card => card.dataset.work === selectedWork);
+      if (selectedCard) {
+        workCards.forEach(card => { card.hidden = card !== selectedCard; });
+        portfolioIndex.textContent = 'Direct Share';
+        portfolioTitle.textContent = selectedCard.dataset.title;
+        portfolioMeta.textContent = 'A focused client view showing one selected piece.';
+        document.title = `${selectedCard.dataset.title} - Aftercells Studio`;
+        btnAllWork.hidden = false;
+        btnAllWork.href = portfolioPath;
+      }
+    }
 
     /* play/pause + sound based on visibility */
     const thresholds = Array.from({length: 21}, (_, i) => i * 0.05);
