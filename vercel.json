@@ -12,6 +12,12 @@
       "permanent": true
     }
   ],
+  "rewrites": [
+    {
+      "source": "/portfolio/:slug",
+      "destination": "/portfolio.html"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
