@@ -151,10 +151,24 @@ body {
 html[data-project="moon-discovery"] .project-title,
 html[data-project="bin-laden"] .project-title,
 html[data-project="reentry"] .project-title {
-  font-size: clamp(1.95rem, 3.2vw, 3.2rem);
+  font-size: clamp(1.3rem, 2.2vw, 2.35rem);
   line-height: 1.04;
   letter-spacing: -0.035em;
-  max-width: 11ch;
+  max-width: none;
+  white-space: nowrap;
+}
+
+html[data-project="moon-discovery"] .project-hero,
+html[data-project="bin-laden"] .project-hero,
+html[data-project="reentry"] .project-hero {
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+html[data-project="moon-discovery"] .project-meta,
+html[data-project="bin-laden"] .project-meta,
+html[data-project="reentry"] .project-meta {
+  align-self: start;
 }
 
 .project-tag {
@@ -374,8 +388,8 @@ html[data-project="the-ball"] .media-stage--vimeo iframe {
   html[data-project="moon-discovery"] .project-title,
   html[data-project="bin-laden"] .project-title,
   html[data-project="reentry"] .project-title {
-    font-size: clamp(1.55rem, 7.4vw, 2.2rem);
-    max-width: none;
+    font-size: clamp(1.1rem, 4.6vw, 1.45rem);
+    white-space: nowrap;
   }
   .project-summary { font-size: 0.9rem; }
   .media-stage-inner { min-height: 260px; }
