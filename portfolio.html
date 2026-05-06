@@ -235,10 +235,17 @@
       background: #171226;
     }
     .work-card-video--vimeo iframe {
-      transform: scale(7.4);
-      transform-origin: center center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 740%;
+      height: 740%;
+      transform: translate(-50%, -50%);
     }
-    .work-card:hover .work-card-video--vimeo iframe { transform: scale(7.55); }
+    .work-card:hover .work-card-video--vimeo iframe {
+      width: 755%;
+      height: 755%;
+    }
 
     /* Image cards (natural height, no crop) */
     .work-card-image {
@@ -345,8 +352,14 @@
       .work-card-video { display: flex; flex-direction: column; min-height: 280px; }
       .work-card-video video { flex: 1; min-height: 220px; }
       .work-card-video iframe { flex: 1; min-height: 220px; }
-      .work-card-video--vimeo iframe { transform: scale(5.7); }
-      .work-card:hover .work-card-video--vimeo iframe { transform: scale(5.85); }
+      .work-card-video--vimeo iframe {
+        width: 570%;
+        height: 570%;
+      }
+      .work-card:hover .work-card-video--vimeo iframe {
+        width: 585%;
+        height: 585%;
+      }
       .work-card-video-group { display: flex; flex-direction: column; gap: 10px; }
       .work-card-video-group .work-card-video { min-height: 220px; }
       .vid-sound-bar { position: static; opacity: 1; margin: 10px 10px 12px auto; padding: 7px 12px; }
