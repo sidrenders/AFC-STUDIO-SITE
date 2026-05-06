@@ -7,7 +7,7 @@
       summary: "A focused motion design reel presented as a standalone project page.",
       media: {
         type: "vimeo",
-        src: "https://player.vimeo.com/video/1168540088?background=1&autoplay=1&loop=1&muted=1&title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=122963"
+        src: "https://player.vimeo.com/video/1168540088?background=1&autoplay=1&loop=1&muted=1&quality=1080p&title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=122963"
       }
     },
     "benq": {
