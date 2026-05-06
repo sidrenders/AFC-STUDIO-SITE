@@ -231,6 +231,11 @@
     }
     .work-card:hover .work-card-video video { transform: scale(1.04); }
     .work-card:hover .work-card-video iframe { transform: scale(1.01); }
+    .work-card-video--vimeo iframe {
+      transform: scale(2.55);
+      transform-origin: center center;
+    }
+    .work-card:hover .work-card-video--vimeo iframe { transform: scale(2.62); }
 
     /* Image cards (natural height, no crop) */
     .work-card-image {
@@ -337,6 +342,8 @@
       .work-card-video { display: flex; flex-direction: column; min-height: 280px; }
       .work-card-video video { flex: 1; min-height: 220px; }
       .work-card-video iframe { flex: 1; min-height: 220px; }
+      .work-card-video--vimeo iframe { transform: scale(2.15); }
+      .work-card:hover .work-card-video--vimeo iframe { transform: scale(2.22); }
       .work-card-video-group { display: flex; flex-direction: column; gap: 10px; }
       .work-card-video-group .work-card-video { min-height: 220px; }
       .vid-sound-bar { position: static; opacity: 1; margin: 10px 10px 12px auto; padding: 7px 12px; }
@@ -358,7 +365,6 @@
       </a>
       <div class="nav-right">
         <button class="nav-btn" id="btn-theme" type="button">Light</button>
-        <a class="nav-btn" id="btn-all-work" href="/portfolio" hidden>All Work</a>
         <a class="nav-btn" href="/">&larr; Home</a>
       </div>
     </nav>
@@ -381,7 +387,7 @@
               <p class="wc-tag">// Motion Design Reel</p>
             </div>
           </div>
-          <div class="work-card-video">
+          <div class="work-card-video work-card-video--vimeo">
             <iframe
               src="https://player.vimeo.com/video/1168540088?background=1&autoplay=1&loop=1&muted=1&title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=122963"
               allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
@@ -499,13 +505,8 @@
     /* theme */
     const html = document.documentElement;
     const btnTheme = document.getElementById('btn-theme');
-    const btnAllWork = document.getElementById('btn-all-work');
     const themeColor = document.querySelector('meta[name="theme-color"]');
     const pageDate = document.getElementById('page-date');
-    const portfolioIndex = document.getElementById('portfolio-index');
-    const portfolioTitle = document.getElementById('portfolio-title');
-    const portfolioMeta = document.getElementById('portfolio-meta');
-    const workList = document.querySelector('.work-list');
     const workCards = Array.from(document.querySelectorAll('.work-card'));
     const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const saved = localStorage.getItem('aftercells-theme') || 'dark';
@@ -520,28 +521,12 @@
       themeColor.setAttribute('content', next === 'dark' ? '#080808' : '#f0ede8');
     });
 
-    const portfolioPath = '/portfolio';
-    const pathMatch = window.location.pathname.match(/^\/portfolio\/([^/]+)\/?$/);
-    const selectedWork = pathMatch ? decodeURIComponent(pathMatch[1]) : '';
-    if (selectedWork) {
-      const selectedCard = workCards.find(card => card.dataset.work === selectedWork);
-      if (selectedCard) {
-        workList.prepend(selectedCard);
-        portfolioIndex.textContent = 'Project View';
-        portfolioTitle.textContent = selectedCard.dataset.title;
-        portfolioMeta.textContent = 'Selected project first, with the rest of the portfolio below.';
-        document.title = `${selectedCard.dataset.title} - Aftercells Studio`;
-        btnAllWork.hidden = false;
-        btnAllWork.href = portfolioPath;
-      }
-    }
-
     workCards.forEach(card => {
       card.classList.add('is-project-link');
       card.tabIndex = 0;
       card.setAttribute('role', 'link');
       card.setAttribute('aria-label', `${card.dataset.title} project page`);
-      const targetPath = `${portfolioPath}/${card.dataset.work}`;
+      const targetPath = `/portfolio/${card.dataset.work}`;
       card.addEventListener('click', event => {
         if (event.target.closest('a, button, input')) return;
         window.location.href = targetPath;
