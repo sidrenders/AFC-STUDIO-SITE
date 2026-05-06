@@ -31,9 +31,7 @@
 html, body { min-height: 100%; width: 100%; overflow-x: hidden; }
 
 body {
-  background:
-    var(--glow),
-    linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 22%, var(--bg) 100%);
+  background: var(--bg);
   color: var(--txt);
   font-family: "Manrope", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -140,6 +138,7 @@ body {
   text-transform: uppercase;
   color: var(--dim);
   margin-bottom: 18px;
+  display: none;
 }
 
 .project-title {
@@ -147,6 +146,13 @@ body {
   font-weight: 200;
   line-height: 0.98;
   letter-spacing: -0.05em;
+}
+
+html[data-project="moon-discovery"] .project-title,
+html[data-project="bin-laden"] .project-title {
+  font-size: clamp(2.35rem, 4.5vw, 4.5rem);
+  line-height: 1.02;
+  max-width: 14ch;
 }
 
 .project-tag {
@@ -199,6 +205,11 @@ body {
 }
 
 .project-cta:hover { opacity: 0.86; }
+
+.project-cta,
+.page-nav .nav-actions a[href="/portfolio"] {
+  display: none;
+}
 
 .media-stage {
   position: relative;
@@ -362,6 +373,11 @@ html[data-project="the-ball"] .media-stage--vimeo iframe {
   .nav-btn { cursor: pointer; padding: 10px 14px; font-size: 0.64rem; }
   .project-page { padding: 24px 20px 36px; }
   .project-title { font-size: clamp(2.3rem, 13vw, 3.8rem); }
+  html[data-project="moon-discovery"] .project-title,
+  html[data-project="bin-laden"] .project-title {
+    font-size: clamp(1.9rem, 9.2vw, 2.7rem);
+    max-width: none;
+  }
   .project-summary { font-size: 0.9rem; }
   .media-stage-inner { min-height: 260px; }
   .media-stage--vimeo iframe {
