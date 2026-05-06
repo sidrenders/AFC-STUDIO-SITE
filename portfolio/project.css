@@ -177,6 +177,7 @@ html[data-project="bin-laden"] .project-title {
   color: var(--dim);
   line-height: 1.8;
   font-size: 0.96rem;
+  display: none;
 }
 
 .project-links {
@@ -205,11 +206,6 @@ html[data-project="bin-laden"] .project-title {
 }
 
 .project-cta:hover { opacity: 0.86; }
-
-.project-cta,
-.page-nav .nav-actions a[href="/portfolio"] {
-  display: none;
-}
 
 .media-stage {
   position: relative;
