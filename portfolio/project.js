@@ -7,7 +7,7 @@
       summary: "A focused motion design reel presented as a standalone project page.",
       media: {
         type: "vimeo",
-        src: "https://player.vimeo.com/video/1168540088?background=1&autoplay=1&loop=1&muted=1&quality=1080p&title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=122963"
+        src: "https://player.vimeo.com/video/1168540088?background=1&autoplay=1&loop=1&muted=1&playsinline=1&title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=122963"
       }
     },
     "benq": {
@@ -155,6 +155,9 @@
 
   stage.appendChild(stageInner);
   mediaHost.appendChild(stage);
+  if (project.media.type === "vimeo") {
+    initVimeoPlayback(stageInner.querySelector("iframe"), stage);
+  }
 
   const now = new Date();
   pageDate.textContent = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(now);
@@ -239,5 +242,50 @@
     bar.appendChild(btn);
     bar.appendChild(slider);
     host.appendChild(bar);
+  }
+
+  function initVimeoPlayback(iframe, stageEl) {
+    if (!iframe) return;
+    loadVimeoApi().then(() => {
+      if (!window.Vimeo || !window.Vimeo.Player) return;
+      const player = new window.Vimeo.Player(iframe);
+      player.ready()
+        .then(() => player.setVolume(0).catch(() => {}))
+        .then(() => player.play())
+        .then(() => removeFallback(stageEl))
+        .catch(() => {
+          showFallback(stageEl, () => {
+            player.play().then(() => removeFallback(stageEl)).catch(() => {});
+          });
+        });
+    }).catch(() => {});
+  }
+
+  function loadVimeoApi() {
+    if (window.Vimeo && window.Vimeo.Player) return Promise.resolve();
+    if (window.__aftercellsVimeoApi) return window.__aftercellsVimeoApi;
+    window.__aftercellsVimeoApi = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://player.vimeo.com/api/player.js";
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+    return window.__aftercellsVimeoApi;
+  }
+
+  function showFallback(stageEl, onClick) {
+    if (stageEl.querySelector(".media-fallback-play")) return;
+    const button = document.createElement("button");
+    button.className = "media-fallback-play";
+    button.type = "button";
+    button.textContent = "Play Video";
+    button.addEventListener("click", onClick);
+    stageEl.appendChild(button);
+  }
+
+  function removeFallback(stageEl) {
+    const button = stageEl.querySelector(".media-fallback-play");
+    if (button) button.remove();
   }
 })();
