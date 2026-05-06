@@ -18,8 +18,15 @@
       link: { href: "https://benqi.fi/", label: "benqi.fi" },
       media: { type: "video", src: "/videos/motion/benq-web.mp4" }
     },
-    "spectra": {
+    "a-wise": {
       number: "003",
+      title: "A Wise",
+      tag: "Motion Design",
+      summary: "A motion-driven piece delivered from a new 1080p web master to keep playback sharp while cutting the original 4K file size down dramatically.",
+      media: { type: "video", src: "/videos/motion/a-wise-web.mp4" }
+    },
+    "spectra": {
+      number: "004",
       title: "Spectra",
       tag: "Launch Video",
       summary: "Launch visuals designed to feel sharp, financial, and high-signal without losing motion energy.",
@@ -27,7 +34,7 @@
       media: { type: "video", src: "/videos/motion/spectra-teaser.mp4" }
     },
     "lucid": {
-      number: "004",
+      number: "005",
       title: "Lucid",
       tag: "Launch Video",
       summary: "Launch motion shaped for a product-first narrative with a clean technical finish.",
@@ -35,7 +42,7 @@
       media: { type: "video", src: "/videos/motion/lucid-web.mp4" }
     },
     "river": {
-      number: "005",
+      number: "006",
       title: "River",
       tag: "Launch Video",
       summary: "A launch piece built around controlled pacing, strong framing, and product-forward motion beats.",
@@ -43,7 +50,7 @@
       media: { type: "video", src: "/videos/motion/river-web.mp4", seamlessLoop: 0.12 }
     },
     "moon-discovery": {
-      number: "006",
+      number: "007",
       title: "The Discovery on the Moon That Nobody Prepared Us For",
       tag: "Explainer",
       summary: "An explainer-led cinematic piece that leans on scale, suspense, and narrative clarity.",
@@ -51,14 +58,14 @@
       media: { type: "video", src: "/videos/3D/moon-discovery.mp4" }
     },
     "reentry": {
-      number: "007",
+      number: "008",
       title: "Reentry to the evacuation day",
       tag: "3D Animation",
       summary: "A 3D-driven piece built around atmosphere, impact, and cinematic movement.",
       media: { type: "video", src: "/videos/3D/reentry-evacuation.mp4" }
     },
     "bin-laden": {
-      number: "008",
+      number: "009",
       title: "How America Found Bin Laden",
       tag: "Storytelling",
       summary: "Story-led motion work balancing pacing, information density, and visual tension.",
