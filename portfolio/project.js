@@ -18,7 +18,7 @@
     },
     "a-wise": {
       number: "003",
-      title: "A Wise",
+      title: "Wise",
       tag: "Motion Design",
       media: { type: "video", src: "/videos/motion/a-wise-web.mp4" }
     },
