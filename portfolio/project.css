@@ -242,6 +242,21 @@ body {
   pointer-events: none;
 }
 
+html[data-project="the-ball"] .media-stage {
+  width: min(92vw, 900px);
+  margin: 0 auto;
+  background: #171226;
+}
+
+html[data-project="the-ball"] .media-stage-inner {
+  aspect-ratio: 1 / 1;
+  min-height: min(82vh, 900px);
+}
+
+html[data-project="the-ball"] .media-stage--vimeo iframe {
+  transform: scale(5.4);
+}
+
 .sound-bar {
   position: absolute;
   right: 20px;
@@ -327,6 +342,15 @@ body {
   .project-summary { font-size: 0.9rem; }
   .media-stage-inner { min-height: 260px; }
   .media-stage--vimeo iframe { transform: scale(1.6); }
+  html[data-project="the-ball"] .media-stage {
+    width: 100%;
+  }
+  html[data-project="the-ball"] .media-stage-inner {
+    min-height: 360px;
+  }
+  html[data-project="the-ball"] .media-stage--vimeo iframe {
+    transform: scale(4.2);
+  }
   .sound-bar {
     right: 14px;
     bottom: 14px;
