@@ -1,7 +1,8 @@
 (function () {
-  // ── Hero montage (shuffled on each load) ──────────
-  const heroVideo = document.querySelector(".hero-montage");
-  if (heroVideo) {
+  // ── Hero montage — double-buffer for instant cuts ──
+  const vA = document.getElementById("hv-a");
+  const vB = document.getElementById("hv-b");
+  if (vA && vB) {
     const clips = [
       "/videos/landing%20page/benq-web.mp4",
       "/videos/landing%20page/lucid-web.mp4",
@@ -17,41 +18,54 @@
       "/videos/landing%20page/river-web_3.mp4",
       "/videos/landing%20page/try-again.mp4",
     ];
-    // Fisher-Yates shuffle — new order every refresh
     for (let i = clips.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [clips[i], clips[j]] = [clips[j], clips[i]];
     }
+
     let idx = 0;
-    heroVideo.loop = false;
+    let front = vA, back = vB;
 
-    // Hidden buffer element pre-fetches the next clip while current plays
-    const buf = document.createElement("video");
-    buf.muted = true;
-    buf.preload = "auto";
-    buf.style.cssText = "position:absolute;width:0;height:0;opacity:0;pointer-events:none";
-    document.body.appendChild(buf);
-
-    function playClip() {
-      const src = clips[idx];
-      heroVideo.style.objectFit = src.includes("try-again") ? "contain" : "cover";
-      heroVideo.src = src;
-      heroVideo.play().catch(() => {});
-      idx = (idx + 1) % clips.length;
-      buf.src = clips[idx]; // preload next clip into browser cache
-      buf.load();
+    function applyFit(v, src) {
+      v.style.objectFit = src.includes("try-again") ? "contain" : "cover";
     }
 
-    heroVideo.addEventListener("ended", playClip);
-    heroVideo.addEventListener("error", () => {
+    function loadBack(src) {
+      applyFit(back, src);
+      back.src = src;
+      back.load();
+    }
+
+    function advance() {
+      back.style.zIndex = "1";
+      front.style.zIndex = "0";
+      back.play().catch(() => {});
+      [front, back] = [back, front];
+      front.addEventListener("ended", advance, { once: true });
+      front.addEventListener("error", skipAndAdvance, { once: true });
       idx = (idx + 1) % clips.length;
-      playClip();
-    });
-    playClip();
+      loadBack(clips[idx]);
+    }
+
+    function skipAndAdvance() {
+      idx = (idx + 1) % clips.length;
+      advance();
+    }
+
+    applyFit(vA, clips[0]);
+    vA.src = clips[0];
+    vA.style.zIndex = "1";
+    vB.style.zIndex = "0";
+    vA.play().catch(() => {});
+    vA.addEventListener("ended", advance, { once: true });
+    vA.addEventListener("error", skipAndAdvance, { once: true });
+    idx = 1;
+    loadBack(clips[1]);
   }
 
   const revealItems = document.querySelectorAll(".reveal");
-  const videos = document.querySelectorAll("video");
+  // Exclude hero montage elements from the generic video observer
+  const videos = document.querySelectorAll("video:not(#hv-a):not(#hv-b)");
   const cursor = document.querySelector(".cursor-logo");
   const footerWordmark = document.querySelector(".footer-wordmark span");
 
