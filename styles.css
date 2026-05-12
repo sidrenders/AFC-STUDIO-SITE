@@ -556,10 +556,11 @@ img, video { display: block; }
     transform: translate(-50%, -50%);
   }
 
-  /* Readable tagline on mobile — not tiny */
+  /* Scale with viewport so it always fits on one line */
   .hero-tagline {
-    font-size: clamp(1.55rem, 7vw, 2.2rem);
-    letter-spacing: -0.035em;
+    font-size: 6vw;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
   }
 
   .hero-attr {
