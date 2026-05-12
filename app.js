@@ -66,18 +66,36 @@
       function loadBack(src) {
         applyFit(back, src);
         back.src = src;
-        back.load();
+        back.load(); // preload silently in background
       }
 
       function advance() {
-        back.style.zIndex = "1";
-        front.style.zIndex = "0";
-        back.play().catch(() => {});
-        [front, back] = [back, front];
-        front.addEventListener("ended", advance, { once: true });
-        front.addEventListener("error", skipAndAdvance, { once: true });
-        idx = (idx + 1) % clips.length;
-        loadBack(clips[idx]);
+        const nf = back, nb = front; // next-front, next-back
+        let swapped = false;
+
+        function doSwap() {
+          if (swapped) return;
+          swapped = true;
+          nf.style.zIndex = "1";
+          nb.style.zIndex = "0";
+          front = nf;
+          back  = nb;
+          front.addEventListener("ended", advance, { once: true });
+          front.addEventListener("error", skipAndAdvance, { once: true });
+          idx = (idx + 1) % clips.length;
+          loadBack(clips[idx]);
+        }
+
+        nf.play().catch(() => {});
+
+        // Wait until the new clip actually has a frame ready before swapping.
+        // This keeps the old clip's last frame visible instead of flashing black.
+        if (nf.readyState >= 2) {
+          doSwap();
+        } else {
+          nf.addEventListener("canplay", doSwap, { once: true });
+          setTimeout(doSwap, 800); // safety fallback if canplay is slow
+        }
       }
 
       function skipAndAdvance() {
