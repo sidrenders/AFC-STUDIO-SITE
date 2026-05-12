@@ -103,7 +103,7 @@ img, video { display: block; }
 
 .hero {
   position: relative;
-  min-height: 100vh;
+  min-height: 100dvh; /* dvh avoids iOS address-bar gap */
   overflow: hidden;
   background: var(--bg-dark);
   color: var(--text-dark);
@@ -545,21 +545,31 @@ img, video { display: block; }
   body { cursor: auto; }
   .cursor-logo { display: none; }
 
-  .site-header { padding: 16px; }
-  .brand img { width: 36px; }
+  .site-header { padding: 14px 16px; }
+  .brand img { width: 34px; }
 
-  .scroll-cue { bottom: 24px; }
+  .scroll-cue { bottom: 28px; }
+
   .hero-copy {
-    max-width: min(92vw, 420px);
+    max-width: min(88vw, 420px);
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
+
+  /* Readable tagline on mobile — not tiny */
   .hero-tagline {
-    font-size: 1rem;
+    font-size: clamp(1.55rem, 7vw, 2.2rem);
+    letter-spacing: -0.035em;
+  }
+
+  .hero-attr {
+    font-size: clamp(0.85rem, 3.6vw, 1.1rem);
   }
 
   .editorial-grid {
     grid-template-columns: 1fr;
-    gap: 14px;
-    padding: 0 16px 48px;
+    gap: 12px;
+    padding: 0 14px 48px;
   }
 
   .intro-band,
@@ -568,23 +578,37 @@ img, video { display: block; }
   }
 
   .intro-band {
-    padding: 36px 0 28px;
+    padding: 32px 0 24px;
   }
 
   .about-strip {
     grid-template-columns: 1fr;
-    gap: 24px;
-    padding: 22px 0 28px;
+    gap: 22px;
+    padding: 20px 0 26px;
   }
 
   .about-col--services {
     grid-column: span 1;
     border-top: 1px solid var(--line-light);
-    padding-top: 20px;
+    padding-top: 18px;
   }
 
   .intro-statement h2 {
-    font-size: clamp(2.6rem, 13vw, 4.2rem);
+    font-size: clamp(2.4rem, 12.5vw, 4rem);
+    line-height: 0.92;
+  }
+
+  .about-text {
+    font-size: 0.93rem;
+    line-height: 1.6;
+  }
+
+  /* Taller touch target for CTA */
+  .cta-btn {
+    padding: 15px 24px;
+    font-size: 0.9rem;
+    width: 100%;
+    text-align: center;
   }
 
   .project-large,
@@ -592,11 +616,25 @@ img, video { display: block; }
   .project-compact,
   .project-ultra {
     grid-column: span 1;
-    min-height: 280px;
+    min-height: max(220px, 54vw);
+  }
+
+  .project-label {
+    padding: 11px 14px;
+  }
+
+  .project-label-name {
+    font-size: 0.8rem;
+  }
+
+  /* Footer */
+  .site-footer {
+    min-height: 52vh;
   }
 
   .footer-layout {
-    padding: 18px 16px 20px;
+    min-height: 52vh;
+    padding: 18px 16px 16px;
   }
 
   .footer-email {
@@ -613,7 +651,7 @@ img, video { display: block; }
   }
 
   .footer-wordmark span {
-    font-size: 9rem;
+    font-size: clamp(5rem, 24vw, 9rem);
   }
 }
 

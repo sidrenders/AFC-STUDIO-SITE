@@ -1,5 +1,5 @@
 (function () {
-  // ── Hero montage — double-buffer for instant cuts ──
+  // ── Hero montage ───────────────────────────────────
   const vA = document.getElementById("hv-a");
   const vB = document.getElementById("hv-b");
   if (vA && vB) {
@@ -24,77 +24,105 @@
     }
 
     let idx = 0;
-    let front = vA, back = vB;
 
     function applyFit(v, src) {
       v.style.objectFit = src.includes("try-again") ? "contain" : "cover";
     }
 
-    function loadBack(src) {
-      applyFit(back, src);
-      back.src = src;
-      back.load();
-    }
+    const isMobile = window.matchMedia("(pointer: coarse)").matches;
 
-    function advance() {
-      back.style.zIndex = "1";
-      front.style.zIndex = "0";
-      back.play().catch(() => {});
-      [front, back] = [back, front];
-      front.addEventListener("ended", advance, { once: true });
-      front.addEventListener("error", skipAndAdvance, { once: true });
-      idx = (idx + 1) % clips.length;
-      loadBack(clips[idx]);
-    }
+    if (isMobile) {
+      // ── Mobile: single video, no double-buffer ──────
+      // Two simultaneous preloading videos freeze mobile browsers.
+      vB.style.display = "none";
+      vA.style.zIndex = "1";
 
-    function skipAndAdvance() {
-      idx = (idx + 1) % clips.length;
-      advance();
-    }
+      let guardTimer = null;
 
-    applyFit(vA, clips[0]);
-    vA.src = clips[0];
-    vA.style.zIndex = "1";
-    vB.style.zIndex = "0";
-    vA.play().catch(() => {});
-    vA.addEventListener("ended", advance, { once: true });
-    vA.addEventListener("error", skipAndAdvance, { once: true });
-    idx = 1;
-    loadBack(clips[1]);
+      function playMobile() {
+        clearTimeout(guardTimer);
+        const src = clips[idx];
+        applyFit(vA, src);
+        vA.src = src;
+        vA.play().catch(() => {});
+        idx = (idx + 1) % clips.length;
+
+        // iOS guard: if 'ended' doesn't fire within a generous window, force next
+        vA.addEventListener("loadedmetadata", function guard() {
+          vA.removeEventListener("loadedmetadata", guard);
+          const dur = vA.duration || 10;
+          guardTimer = setTimeout(playMobile, (dur + 1) * 1000);
+        }, { once: true });
+      }
+
+      vA.addEventListener("ended", () => { clearTimeout(guardTimer); playMobile(); });
+      vA.addEventListener("error",  () => { clearTimeout(guardTimer); idx = (idx + 1) % clips.length; playMobile(); });
+      playMobile();
+
+    } else {
+      // ── Desktop: double-buffer for instant cuts ─────
+      let front = vA, back = vB;
+
+      function loadBack(src) {
+        applyFit(back, src);
+        back.src = src;
+        back.load();
+      }
+
+      function advance() {
+        back.style.zIndex = "1";
+        front.style.zIndex = "0";
+        back.play().catch(() => {});
+        [front, back] = [back, front];
+        front.addEventListener("ended", advance, { once: true });
+        front.addEventListener("error", skipAndAdvance, { once: true });
+        idx = (idx + 1) % clips.length;
+        loadBack(clips[idx]);
+      }
+
+      function skipAndAdvance() {
+        idx = (idx + 1) % clips.length;
+        advance();
+      }
+
+      applyFit(vA, clips[0]);
+      vA.src = clips[0];
+      vA.style.zIndex = "1";
+      vB.style.zIndex = "0";
+      vA.play().catch(() => {});
+      vA.addEventListener("ended", advance, { once: true });
+      vA.addEventListener("error", skipAndAdvance, { once: true });
+      idx = 1;
+      loadBack(clips[1]);
+    }
   }
 
+  // ── Reveal on scroll ───────────────────────────────
   const revealItems = document.querySelectorAll(".reveal");
-  // Exclude hero montage elements from the generic video observer
-  const videos = document.querySelectorAll("video:not(#hv-a):not(#hv-b)");
-  const cursor = document.querySelector(".cursor-logo");
-  const footerWordmark = document.querySelector(".footer-wordmark span");
-
   const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) entry.target.classList.add("is-visible");
-    });
+    entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("is-visible"); });
   }, { threshold: 0.10 });
+  revealItems.forEach((el) => revealObserver.observe(el));
 
-  revealItems.forEach((item) => revealObserver.observe(item));
-
+  // ── Project tile videos (play/pause on scroll) ─────
+  const tileVideos = document.querySelectorAll("video:not(#hv-a):not(#hv-b)");
   const videoObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      const video = entry.target;
-      if (entry.isIntersecting) {
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-      }
+    entries.forEach((e) => {
+      const v = e.target;
+      if (e.isIntersecting) { v.play().catch(() => {}); }
+      else { v.pause(); }
     });
   }, { threshold: 0.25 });
 
-  videos.forEach((video) => {
-    video.muted = true;
-    video.playsInline = true;
-    video.style.pointerEvents = "none";
-    videoObserver.observe(video);
+  tileVideos.forEach((v) => {
+    v.muted = true;
+    v.playsInline = true;
+    v.style.pointerEvents = "none";
+    videoObserver.observe(v);
   });
 
+  // ── Footer wordmark fit ────────────────────────────
+  const footerWordmark = document.querySelector(".footer-wordmark span");
   function fitWordmark() {
     if (!footerWordmark) return;
     const parent = footerWordmark.parentElement;
@@ -108,35 +136,25 @@
       footerWordmark.style.fontSize = `${size}px`;
     }
   }
-
   fitWordmark();
   window.addEventListener("resize", fitWordmark);
 
+  // ── Custom cursor (desktop only) ───────────────────
+  const cursor = document.querySelector(".cursor-logo");
   if (cursor && window.matchMedia("(pointer:fine)").matches) {
     let visible = false;
     const interactive = document.querySelectorAll("a, button, .project-tile");
 
     window.addEventListener("mousemove", (e) => {
       cursor.style.left = `${e.clientX}px`;
-      cursor.style.top = `${e.clientY}px`;
-      if (!visible) {
-        cursor.style.opacity = "1";
-        visible = true;
-      }
+      cursor.style.top  = `${e.clientY}px`;
+      if (!visible) { cursor.style.opacity = "1"; visible = true; }
     });
-
-    window.addEventListener("mouseleave", () => {
-      cursor.style.opacity = "0";
-      visible = false;
-    });
+    window.addEventListener("mouseleave", () => { cursor.style.opacity = "0"; visible = false; });
 
     interactive.forEach((node) => {
-      node.addEventListener("mouseenter", () => {
-        cursor.style.transform = "translate(-50%, -50%) scale(1.18)";
-      });
-      node.addEventListener("mouseleave", () => {
-        cursor.style.transform = "translate(-50%, -50%) scale(1)";
-      });
+      node.addEventListener("mouseenter", () => { cursor.style.transform = "translate(-50%, -50%) scale(1.18)"; });
+      node.addEventListener("mouseleave", () => { cursor.style.transform = "translate(-50%, -50%) scale(1)"; });
     });
 
     window.addEventListener("click", () => {
