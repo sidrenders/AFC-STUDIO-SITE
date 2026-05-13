@@ -33,9 +33,8 @@
 
     if (isMobile) {
       // ── Mobile: single video, no double-buffer ──────
-      // Two simultaneous preloading videos freeze mobile browsers.
       vB.style.display = "none";
-      vA.style.zIndex = "1";
+      vA.style.opacity = "1";
 
       let guardTimer = null;
 
@@ -60,24 +59,28 @@
       playMobile();
 
     } else {
-      // ── Desktop: double-buffer for instant cuts ─────
+      // ── Desktop: double-buffer, opacity-based swap ──
+      // Back is always opacity:0 so it can never bleed through
+      // (fixes the "see-through" issue with object-fit:contain clips).
+      // CSS transition on opacity gives a soft crossfade that hides
+      // any black first-frame on the incoming clip.
       let front = vA, back = vB;
 
       function loadBack(src) {
         applyFit(back, src);
         back.src = src;
-        back.load(); // preload silently in background
+        back.load();
       }
 
       function advance() {
-        const nf = back, nb = front; // next-front, next-back
+        const nf = back, nb = front;
         let swapped = false;
 
         function doSwap() {
           if (swapped) return;
           swapped = true;
-          nf.style.zIndex = "1";
-          nb.style.zIndex = "0";
+          nf.style.opacity = "1";   // fade in new clip
+          nb.style.opacity = "0";   // fade out old clip
           front = nf;
           back  = nb;
           front.addEventListener("ended", advance, { once: true });
@@ -88,13 +91,11 @@
 
         nf.play().catch(() => {});
 
-        // Wait until the new clip actually has a frame ready before swapping.
-        // This keeps the old clip's last frame visible instead of flashing black.
         if (nf.readyState >= 2) {
           doSwap();
         } else {
           nf.addEventListener("canplay", doSwap, { once: true });
-          setTimeout(doSwap, 800); // safety fallback if canplay is slow
+          setTimeout(doSwap, 800);
         }
       }
 
@@ -105,8 +106,8 @@
 
       applyFit(vA, clips[0]);
       vA.src = clips[0];
-      vA.style.zIndex = "1";
-      vB.style.zIndex = "0";
+      vA.style.opacity = "1";  // first clip visible
+      vB.style.opacity = "0";  // buffer hidden
       vA.play().catch(() => {});
       vA.addEventListener("ended", advance, { once: true });
       vA.addEventListener("error", skipAndAdvance, { once: true });
