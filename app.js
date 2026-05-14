@@ -46,7 +46,6 @@
         vA.play().catch(() => {});
         idx = (idx + 1) % clips.length;
 
-        // iOS guard: if 'ended' doesn't fire within a generous window, force next
         vA.addEventListener("loadedmetadata", function guard() {
           vA.removeEventListener("loadedmetadata", guard);
           const dur = vA.duration || 10;
@@ -55,15 +54,22 @@
       }
 
       vA.addEventListener("ended", () => { clearTimeout(guardTimer); playMobile(); });
-      vA.addEventListener("error",  () => { clearTimeout(guardTimer); idx = (idx + 1) % clips.length; playMobile(); });
+      vA.addEventListener("error", () => { clearTimeout(guardTimer); idx = (idx + 1) % clips.length; playMobile(); });
       playMobile();
 
     } else {
-      // ── Desktop: double-buffer, opacity-based swap ──
-      // Back is always opacity:0 so it can never bleed through
-      // (fixes the "see-through" issue with object-fit:contain clips).
-      // CSS transition on opacity gives a soft crossfade that hides
-      // any black first-frame on the incoming clip.
+      // ── Desktop: double-buffer ──────────────────────
+      //
+      // The rule that prevents ALL black flashes:
+      //   Never change back.src while back is still visible.
+      //
+      // Crossfade strategy:
+      //   1. Raise nf (new clip) above nb (old clip) via z-index.
+      //   2. Fade nf opacity 0→1. nb stays at opacity:1 the whole time —
+      //      it acts as the "background" so the dark hero never bleeds through.
+      //   3. Only AFTER the transition (250ms), hide nb and swap its src.
+      //      By then nf is fully opaque and covers nb completely.
+      //
       let front = vA, back = vB;
 
       function loadBack(src) {
@@ -74,28 +80,46 @@
 
       function advance() {
         const nf = back, nb = front;
-        let swapped = false;
+        let done = false;
 
         function doSwap() {
-          if (swapped) return;
-          swapped = true;
-          nf.style.opacity = "1";   // fade in new clip
-          nb.style.opacity = "0";   // fade out old clip
+          if (done) return;
+          done = true;
+
+          // New clip goes on top, old clip stays fully visible beneath it
+          nf.style.zIndex = "1";
+          nb.style.zIndex = "0";
+
+          // One rAF lets the browser paint the z-index before the fade starts,
+          // guaranteeing nf is above nb when it fades in.
+          requestAnimationFrame(() => {
+            nf.style.opacity = "1";
+          });
+
+          // Wire up the next transition immediately
           front = nf;
           back  = nb;
-          front.addEventListener("ended", advance, { once: true });
-          front.addEventListener("error", skipAndAdvance, { once: true });
-          idx = (idx + 1) % clips.length;
-          loadBack(clips[idx]);
+          front.addEventListener("ended",  advance,       { once: true });
+          front.addEventListener("error",  skipAndAdvance, { once: true });
+
+          // Only after nf has fully faded in: hide nb and load the next clip.
+          // At this point nf covers nb completely, so changing nb.src is invisible.
+          setTimeout(() => {
+            nb.style.opacity = "0";
+            idx = (idx + 1) % clips.length;
+            loadBack(clips[idx]);
+          }, 250); // matches CSS transition (200ms) + safety margin
         }
 
         nf.play().catch(() => {});
 
+        // Wait until nf has at least one decoded frame before swapping,
+        // so the first frame shown is never black.
         if (nf.readyState >= 2) {
           doSwap();
         } else {
           nf.addEventListener("canplay", doSwap, { once: true });
-          setTimeout(doSwap, 800);
+          setTimeout(doSwap, 800); // fallback if canplay is slow
         }
       }
 
@@ -104,13 +128,16 @@
         advance();
       }
 
+      // Init: vA plays first, vB silently buffers second
       applyFit(vA, clips[0]);
-      vA.src = clips[0];
-      vA.style.opacity = "1";  // first clip visible
-      vB.style.opacity = "0";  // buffer hidden
+      vA.src      = clips[0];
+      vA.style.zIndex  = "1";
+      vA.style.opacity = "1";
+      vB.style.zIndex  = "0";
+      vB.style.opacity = "0";
       vA.play().catch(() => {});
-      vA.addEventListener("ended", advance, { once: true });
-      vA.addEventListener("error", skipAndAdvance, { once: true });
+      vA.addEventListener("ended",  advance,       { once: true });
+      vA.addEventListener("error",  skipAndAdvance, { once: true });
       idx = 1;
       loadBack(clips[1]);
     }
