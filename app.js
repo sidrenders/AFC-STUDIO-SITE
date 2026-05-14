@@ -32,10 +32,9 @@
     const isMobile = window.matchMedia("(pointer: coarse)").matches;
 
     if (isMobile) {
-      // ── Mobile: single video, no double-buffer ──────
+      // ── Mobile: single video ────────────────────────
       vB.style.display = "none";
       vA.style.opacity = "1";
-
       let guardTimer = null;
 
       function playMobile() {
@@ -45,7 +44,6 @@
         vA.src = src;
         vA.play().catch(() => {});
         idx = (idx + 1) % clips.length;
-
         vA.addEventListener("loadedmetadata", function guard() {
           vA.removeEventListener("loadedmetadata", guard);
           const dur = vA.duration || 10;
@@ -60,15 +58,17 @@
     } else {
       // ── Desktop: double-buffer ──────────────────────
       //
-      // The rule that prevents ALL black flashes:
-      //   Never change back.src while back is still visible.
+      // Key rules that prevent black screens:
       //
-      // Crossfade strategy:
-      //   1. Raise nf (new clip) above nb (old clip) via z-index.
-      //   2. Fade nf opacity 0→1. nb stays at opacity:1 the whole time —
-      //      it acts as the "background" so the dark hero never bleeds through.
-      //   3. Only AFTER the transition (250ms), hide nb and swap its src.
-      //      By then nf is fully opaque and covers nb completely.
+      //  1. Transition fires 0.4 s BEFORE the clip ends via timeupdate,
+      //     so any black trailing frames in the source video are already
+      //     covered by the incoming clip before they're ever visible.
+      //
+      //  2. The old clip (nb) stays at opacity:1 during the entire
+      //     crossfade — the dark hero background never bleeds through.
+      //
+      //  3. loadBack() (which resets back.src) is only called 250 ms
+      //     AFTER doSwap, once the new clip fully covers the old one.
       //
       let front = vA, back = vB;
 
@@ -76,6 +76,38 @@
         applyFit(back, src);
         back.src = src;
         back.load();
+      }
+
+      // watchEnd: monitors the current front video and triggers advance()
+      // 0.4 s before it ends. 'ended' is a safety fallback.
+      function watchEnd() {
+        const target = front; // snapshot — survives future front/back swaps
+        let fired = false;
+
+        function go() {
+          if (fired) return;
+          fired = true;
+          target.removeEventListener("timeupdate", onTime);
+          target.removeEventListener("ended", go);
+          advance();
+        }
+
+        function onTime() {
+          if (target.duration && target.currentTime >= target.duration - 0.4) go();
+        }
+
+        function onError() {
+          if (fired) return;
+          fired = true;
+          target.removeEventListener("timeupdate", onTime);
+          target.removeEventListener("ended", go);
+          idx = (idx + 1) % clips.length;
+          advance();
+        }
+
+        target.addEventListener("timeupdate", onTime);
+        target.addEventListener("ended", go, { once: true });
+        target.addEventListener("error", onError, { once: true });
       }
 
       function advance() {
@@ -86,60 +118,50 @@
           if (done) return;
           done = true;
 
-          // New clip goes on top, old clip stays fully visible beneath it
+          // nf fades in ON TOP of nb (nb stays opacity:1 as the background)
           nf.style.zIndex = "1";
           nb.style.zIndex = "0";
+          requestAnimationFrame(() => { nf.style.opacity = "1"; });
 
-          // One rAF lets the browser paint the z-index before the fade starts,
-          // guaranteeing nf is above nb when it fades in.
-          requestAnimationFrame(() => {
-            nf.style.opacity = "1";
-          });
-
-          // Wire up the next transition immediately
           front = nf;
           back  = nb;
-          front.addEventListener("ended",  advance,       { once: true });
-          front.addEventListener("error",  skipAndAdvance, { once: true });
+          watchEnd(); // arm listener for new front
 
-          // Only after nf has fully faded in: hide nb and load the next clip.
-          // At this point nf covers nb completely, so changing nb.src is invisible.
+          // Only after nf fully covers nb: hide nb and load next clip into it
           setTimeout(() => {
             nb.style.opacity = "0";
             idx = (idx + 1) % clips.length;
             loadBack(clips[idx]);
-          }, 250); // matches CSS transition (200ms) + safety margin
+          }, 250);
         }
 
         nf.play().catch(() => {});
-
-        // Wait until nf has at least one decoded frame before swapping,
-        // so the first frame shown is never black.
         if (nf.readyState >= 2) {
           doSwap();
         } else {
           nf.addEventListener("canplay", doSwap, { once: true });
-          setTimeout(doSwap, 800); // fallback if canplay is slow
+          setTimeout(doSwap, 800);
         }
       }
 
-      function skipAndAdvance() {
-        idx = (idx + 1) % clips.length;
-        advance();
-      }
+      // Resume playback if tab was backgrounded
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) front.play().catch(() => {});
+      });
 
-      // Init: vA plays first, vB silently buffers second
+      // Init
       applyFit(vA, clips[0]);
-      vA.src      = clips[0];
+      vA.src = clips[0];
       vA.style.zIndex  = "1";
       vA.style.opacity = "1";
       vB.style.zIndex  = "0";
       vB.style.opacity = "0";
       vA.play().catch(() => {});
-      vA.addEventListener("ended",  advance,       { once: true });
-      vA.addEventListener("error",  skipAndAdvance, { once: true });
       idx = 1;
       loadBack(clips[1]);
+      front = vA;
+      back  = vB;
+      watchEnd();
     }
   }
 
@@ -150,13 +172,12 @@
   }, { threshold: 0.10 });
   revealItems.forEach((el) => revealObserver.observe(el));
 
-  // ── Project tile videos (play/pause on scroll) ─────
+  // ── Project tile videos ────────────────────────────
   const tileVideos = document.querySelectorAll("video:not(#hv-a):not(#hv-b)");
   const videoObserver = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
-      const v = e.target;
-      if (e.isIntersecting) { v.play().catch(() => {}); }
-      else { v.pause(); }
+      if (e.isIntersecting) { e.target.play().catch(() => {}); }
+      else { e.target.pause(); }
     });
   }, { threshold: 0.25 });
 
