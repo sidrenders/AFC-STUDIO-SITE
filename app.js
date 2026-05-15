@@ -29,10 +29,14 @@
       v.style.objectFit = src.includes("try-again") ? "contain" : "cover";
     }
 
+    // Kill any CSS transitions — hard cuts only, no blending
+    vA.style.transition = "none";
+    vB.style.transition = "none";
+
     const isMobile = window.matchMedia("(pointer: coarse)").matches;
 
     if (isMobile) {
-      // ── Mobile: single video ────────────────────────
+      // ── Mobile: single video, hard cut ─────────────
       vB.style.display = "none";
       vA.style.opacity = "1";
       let guardTimer = null;
@@ -40,128 +44,117 @@
       function playMobile() {
         clearTimeout(guardTimer);
         const src = clips[idx];
+        idx = (idx + 1) % clips.length;
         applyFit(vA, src);
         vA.src = src;
+        vA.load();
         vA.play().catch(() => {});
-        idx = (idx + 1) % clips.length;
-        vA.addEventListener("loadedmetadata", function guard() {
-          vA.removeEventListener("loadedmetadata", guard);
+        vA.addEventListener("loadedmetadata", function onMeta() {
+          vA.removeEventListener("loadedmetadata", onMeta);
           const dur = vA.duration || 10;
           guardTimer = setTimeout(playMobile, (dur + 1) * 1000);
         }, { once: true });
       }
 
       vA.addEventListener("ended", () => { clearTimeout(guardTimer); playMobile(); });
-      vA.addEventListener("error", () => { clearTimeout(guardTimer); idx = (idx + 1) % clips.length; playMobile(); });
+      vA.addEventListener("error",  () => { clearTimeout(guardTimer); playMobile(); });
       playMobile();
 
     } else {
-      // ── Desktop: double-buffer ──────────────────────
+      // ── Desktop: double-buffer, instant hard cut ────
       //
-      // Key rules that prevent black screens:
+      // front = currently visible video  (z:1, opacity:1)
+      // back  = preloading next clip     (z:0, opacity:0, hidden)
       //
-      //  1. Transition fires 0.4 s BEFORE the clip ends via timeupdate,
-      //     so any black trailing frames in the source video are already
-      //     covered by the incoming clip before they're ever visible.
-      //
-      //  2. The old clip (nb) stays at opacity:1 during the entire
-      //     crossfade — the dark hero background never bleeds through.
-      //
-      //  3. loadBack() (which resets back.src) is only called 250 ms
-      //     AFTER doSwap, once the new clip fully covers the old one.
+      // On cut: flip z-index + opacity INSTANTLY (no CSS transition),
+      // then preload the clip after that into the new back.
       //
       let front = vA, back = vB;
 
-      function loadBack(src) {
-        applyFit(back, src);
-        back.src = src;
+      // Initialise front
+      applyFit(front, clips[0]);
+      front.src            = clips[0];
+      front.style.zIndex   = "1";
+      front.style.opacity  = "1";
+      front.play().catch(() => {});
+
+      // Preload clip[1] into back (invisible)
+      idx = 1;
+      applyFit(back, clips[idx]);
+      back.src           = clips[idx];
+      back.load();
+      back.style.zIndex  = "0";
+      back.style.opacity = "0";
+
+      function loadNextIntoBack() {
+        idx = (idx + 1) % clips.length;
+        applyFit(back, clips[idx]);
+        back.src = clips[idx];
         back.load();
       }
 
-      // watchEnd: monitors the current front video and triggers advance()
-      // 0.4 s before it ends. 'ended' is a safety fallback.
+      function doHardCut() {
+        const nf = back, nb = front;
+        // Instant swap — no animation whatsoever
+        nf.style.zIndex  = "1";
+        nf.style.opacity = "1";
+        nb.style.zIndex  = "0";
+        nb.style.opacity = "0";
+        front = nf;
+        back  = nb;
+        watchEnd();
+        loadNextIntoBack();
+      }
+
       function watchEnd() {
-        const target = front; // snapshot — survives future front/back swaps
+        const target = front;
         let fired = false;
 
-        function go() {
+        function cut() {
           if (fired) return;
           fired = true;
           target.removeEventListener("timeupdate", onTime);
-          target.removeEventListener("ended", go);
-          advance();
+          target.removeEventListener("ended",      cut);
+          target.removeEventListener("error",      cut);
+
+          // Only cut once back has at least one decoded frame
+          let done = false;
+          function executeCut() {
+            if (done) return;
+            done = true;
+            back.play().catch(() => {});
+            doHardCut();
+          }
+
+          if (back.readyState >= 2) {
+            executeCut();
+          } else {
+            back.addEventListener("canplay", function onCP() {
+              back.removeEventListener("canplay", onCP);
+              executeCut();
+            });
+            // Hard deadline: cut anyway after 1 s so we never get stuck
+            setTimeout(executeCut, 1000);
+          }
         }
 
+        // Fire 0.5 s before clip ends to skip black tail frames
+        // embedded in the source files. 'ended' is the safety fallback.
         function onTime() {
-          if (target.duration && target.currentTime >= target.duration - 0.4) go();
-        }
-
-        function onError() {
-          if (fired) return;
-          fired = true;
-          target.removeEventListener("timeupdate", onTime);
-          target.removeEventListener("ended", go);
-          idx = (idx + 1) % clips.length;
-          advance();
+          if (target.duration && target.currentTime >= target.duration - 0.5) cut();
         }
 
         target.addEventListener("timeupdate", onTime);
-        target.addEventListener("ended", go, { once: true });
-        target.addEventListener("error", onError, { once: true });
+        target.addEventListener("ended", cut, { once: true });
+        target.addEventListener("error", cut, { once: true });
       }
 
-      function advance() {
-        const nf = back, nb = front;
-        let done = false;
+      watchEnd();
 
-        function doSwap() {
-          if (done) return;
-          done = true;
-
-          // nf fades in ON TOP of nb (nb stays opacity:1 as the background)
-          nf.style.zIndex = "1";
-          nb.style.zIndex = "0";
-          requestAnimationFrame(() => { nf.style.opacity = "1"; });
-
-          front = nf;
-          back  = nb;
-          watchEnd(); // arm listener for new front
-
-          // Only after nf fully covers nb: hide nb and load next clip into it
-          setTimeout(() => {
-            nb.style.opacity = "0";
-            idx = (idx + 1) % clips.length;
-            loadBack(clips[idx]);
-          }, 250);
-        }
-
-        nf.play().catch(() => {});
-        if (nf.readyState >= 2) {
-          doSwap();
-        } else {
-          nf.addEventListener("canplay", doSwap, { once: true });
-          setTimeout(doSwap, 800);
-        }
-      }
-
-      // Resume playback if tab was backgrounded
+      // Resume if the tab was backgrounded
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden) front.play().catch(() => {});
       });
-
-      // Init
-      applyFit(vA, clips[0]);
-      vA.src = clips[0];
-      vA.style.zIndex  = "1";
-      vA.style.opacity = "1";
-      vB.style.zIndex  = "0";
-      vB.style.opacity = "0";
-      vA.play().catch(() => {});
-      idx = 1;
-      loadBack(clips[1]);
-      front = vA;
-      back  = vB;
-      watchEnd();
     }
   }
 
@@ -177,13 +170,13 @@
   const videoObserver = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
       if (e.isIntersecting) { e.target.play().catch(() => {}); }
-      else { e.target.pause(); }
+      else                  { e.target.pause(); }
     });
   }, { threshold: 0.25 });
 
   tileVideos.forEach((v) => {
-    v.muted = true;
-    v.playsInline = true;
+    v.muted               = true;
+    v.playsInline         = true;
     v.style.pointerEvents = "none";
     videoObserver.observe(v);
   });
