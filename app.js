@@ -29,14 +29,13 @@
       v.style.objectFit = src.includes("try-again") ? "contain" : "cover";
     }
 
-    // Kill any CSS transitions — hard cuts only, no blending
     vA.style.transition = "none";
     vB.style.transition = "none";
 
     const isMobile = window.matchMedia("(pointer: coarse)").matches;
 
     if (isMobile) {
-      // ── Mobile: single video, hard cut ─────────────
+      // ── Mobile: single video ────────────────────────
       vB.style.display = "none";
       vA.style.opacity = "1";
       let guardTimer = null;
@@ -61,97 +60,90 @@
       playMobile();
 
     } else {
-      // ── Desktop: double-buffer, instant hard cut ────
+      // ── Desktop ─────────────────────────────────────
       //
-      // front = currently visible video  (z:1, opacity:1)
-      // back  = preloading next clip     (z:0, opacity:0, hidden)
-      //
-      // On cut: flip z-index + opacity INSTANTLY (no CSS transition),
-      // then preload the clip after that into the new back.
+      // THE RULE: never make back visible until it fires canplay.
+      // If back isn't ready when front ends, loop front silently
+      // until back fires canplay, then hard-cut instantly.
+      // This makes black screens structurally impossible.
       //
       let front = vA, back = vB;
-
-      // Initialise front
-      applyFit(front, clips[0]);
-      front.src            = clips[0];
-      front.style.zIndex   = "1";
-      front.style.opacity  = "1";
-      front.play().catch(() => {});
-
-      // Preload clip[1] into back (invisible)
-      idx = 1;
-      applyFit(back, clips[idx]);
-      back.src           = clips[idx];
-      back.load();
+      front.style.zIndex = "1";
       back.style.zIndex  = "0";
-      back.style.opacity = "0";
 
-      function loadNextIntoBack() {
-        idx = (idx + 1) % clips.length;
-        applyFit(back, clips[idx]);
-        back.src = clips[idx];
-        back.load();
+      function loadInto(v, src) {
+        applyFit(v, src);
+        v.src = src;
+        v.load();
       }
 
-      function doHardCut() {
-        const nf = back, nb = front;
-        // Instant swap — no animation whatsoever
-        nf.style.zIndex  = "1";
-        nf.style.opacity = "1";
-        nb.style.zIndex  = "0";
-        nb.style.opacity = "0";
-        front = nf;
-        back  = nb;
-        watchEnd();
-        loadNextIntoBack();
-      }
+      // Prime the buffers
+      loadInto(front, clips[0]);
+      idx = 1;
+      loadInto(back, clips[idx]);
 
-      function watchEnd() {
-        const target = front;
-        let fired = false;
+      // Don't show front until its first frame is decoded
+      front.addEventListener("canplay", function() {
+        front.style.opacity = "1";
+        front.play().catch(() => {});
+        startWatcher();
+      }, { once: true });
 
-        function cut() {
-          if (fired) return;
-          fired = true;
-          target.removeEventListener("timeupdate", onTime);
-          target.removeEventListener("ended",      cut);
-          target.removeEventListener("error",      cut);
+      function startWatcher() {
+        const myFront = front;
+        const myBack  = back;
+        let nearEndFired = false;
 
-          // Only cut once back has at least one decoded frame
-          let done = false;
-          function executeCut() {
-            if (done) return;
-            done = true;
-            back.play().catch(() => {});
-            doHardCut();
-          }
+        // ── Called once when front is about to finish ──
+        function onNearEnd() {
+          if (nearEndFired) return;
+          nearEndFired = true;
+          myFront.removeEventListener("timeupdate", onTime);
 
-          if (back.readyState >= 2) {
-            executeCut();
+          if (myBack.readyState >= 2) {
+            // Back has at least one decoded frame — cut now
+            doSwap();
           } else {
-            back.addEventListener("canplay", function onCP() {
-              back.removeEventListener("canplay", onCP);
-              executeCut();
-            });
-            // Hard deadline: cut anyway after 1 s so we never get stuck
-            setTimeout(executeCut, 1000);
+            // Back isn't ready yet: loop front so we never go black,
+            // then cut the instant back fires canplay.
+            myFront.loop = true;
+            myBack.addEventListener("canplay", doSwap, { once: true });
           }
         }
 
-        // Fire 0.5 s before clip ends to skip black tail frames
-        // embedded in the source files. 'ended' is the safety fallback.
-        function onTime() {
-          if (target.duration && target.currentTime >= target.duration - 0.5) cut();
+        // ── The actual hard cut ────────────────────────
+        function doSwap() {
+          myFront.loop = false;
+
+          myBack.play().catch(() => {});
+          myBack.style.zIndex  = "1";
+          myBack.style.opacity = "1";
+          myFront.style.zIndex  = "0";
+          myFront.style.opacity = "0";
+
+          front = myBack;
+          back  = myFront;
+
+          // Load the clip after this one into the now-hidden old front
+          idx = (idx + 1) % clips.length;
+          loadInto(back, clips[idx]);
+
+          // Arm the watcher for the new front
+          startWatcher();
         }
 
-        target.addEventListener("timeupdate", onTime);
-        target.addEventListener("ended", cut, { once: true });
-        target.addEventListener("error", cut, { once: true });
+        function onTime() {
+          // Trigger 0.5 s early to hide any black tail frames in the source file
+          const cutAt = myFront.duration - 0.5;
+          if (cutAt > 0 && myFront.currentTime >= cutAt) onNearEnd();
+        }
+
+        myFront.addEventListener("timeupdate", onTime);
+        myFront.addEventListener("ended", onNearEnd, { once: true });
+        myFront.addEventListener("error", onNearEnd, { once: true });
       }
 
-      watchEnd();
-
-      // Resume if the tab was backgrounded
+      // Resume after tab backgrounding
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden) front.play().catch(() => {});
       });
