@@ -60,43 +60,36 @@
       playMobile();
 
     } else {
-      // ── Desktop ─────────────────────────────────────
+      // ── Desktop: rAF polling state machine ─────────
       //
-      // Two-slot state machine.
+      // No event listeners for swap logic — just inspect state
+      // every animation frame. Eliminates every race condition
+      // and missed-event bug that plagued the event-driven versions.
       //
-      // backReady  — set to true the moment back's canplay fires.
-      //              Listener is registered BEFORE back.src is set so
-      //              we can never miss the event.
+      // front = currently visible, playing video
+      // back  = silently preloading the next clip
       //
-      // swapPending — front has ended but back wasn't ready; front is
-      //               looping. Set to true so the canplay handler
-      //               knows to swap as soon as back is ready.
+      // Swap rule: when front is ≤ 0.5 s from its end AND
+      // back.readyState ≥ 2 (first frame decoded), cut instantly.
+      // If back isn't ready yet, loop front until it is.
       //
       let front = vA, back = vB;
-      let backReady   = false;
-      let swapPending = false;
+      let started = false;
 
       front.style.zIndex = "1";
       back.style.zIndex  = "0";
 
-      // loadBack: wire canplay listener FIRST, then set src — no race.
-      function loadBack(src) {
-        backReady = false;
-        applyFit(back, src);
-
-        back.addEventListener("canplay", function onReady() {
-          backReady = true;
-          if (swapPending) {
-            swapPending = false;
-            executeSwap();
-          }
-        }, { once: true });
-
-        back.src = src;
-        back.load();
+      function loadInto(v, src) {
+        applyFit(v, src);
+        v.src = src;
+        v.load();
       }
 
-      function executeSwap() {
+      loadInto(front, clips[0]);
+      idx = 1;
+      loadInto(back, clips[idx]);
+
+      function doSwap() {
         front.loop = false;
 
         back.play().catch(() => {});
@@ -105,61 +98,60 @@
         front.style.zIndex  = "0";
         front.style.opacity = "0";
 
-        const oldFront = front;
+        // Swap references
+        const tmp = front;
         front = back;
-        back  = oldFront;
+        back  = tmp;
 
-        watchFront();                              // watch new front
+        // Queue next clip into the now-hidden old front
         idx = (idx + 1) % clips.length;
-        loadBack(clips[idx]);                      // preload into new back
+        loadInto(back, clips[idx]);
       }
 
-      function onFrontNearEnd() {
-        if (backReady) {
-          executeSwap();
-        } else {
-          // Back hasn't loaded yet — loop front seamlessly until it does
-          swapPending = true;
-          front.loop  = true;
+      function tick() {
+        // Phase 1 – wait for first clip to have a decoded frame
+        if (!started) {
+          if (front.readyState >= 2) {
+            front.style.opacity = "1";
+            front.play().catch(() => {});
+            started = true;
+          }
+          requestAnimationFrame(tick);
+          return;
         }
+
+        // Phase 2 – normal monitoring
+        const dur      = front.duration;
+        const finite   = dur > 0 && isFinite(dur);
+        const timeLeft = finite ? dur - front.currentTime : Infinity;
+        const nearEnd  = timeLeft <= 0.5 || front.ended;
+
+        if (nearEnd) {
+          if (back.readyState >= 2) {
+            // Back has a decoded frame — hard cut
+            doSwap();
+          } else {
+            // Back isn't ready yet — keep screen filled by looping front
+            if (front.ended) {
+              // Video already ended before back was ready: restart it
+              front.currentTime = 0;
+              front.play().catch(() => {});
+            }
+            front.loop = true;   // prevent it from ending again
+          }
+        }
+
+        requestAnimationFrame(tick);
       }
 
-      function watchFront() {
-        const watching = front;
-        let called = false;
+      requestAnimationFrame(tick);
 
-        function trigger() {
-          if (called) return;
-          called = true;
-          watching.removeEventListener("timeupdate", onTime);
-          onFrontNearEnd();
-        }
-
-        function onTime() {
-          const cutAt = watching.duration - 0.5;
-          if (cutAt > 0 && watching.currentTime >= cutAt) trigger();
-        }
-
-        watching.addEventListener("timeupdate", onTime);
-        watching.addEventListener("ended", trigger, { once: true });
-        watching.addEventListener("error", trigger, { once: true });
-      }
-
-      // ── Init ──────────────────────────────────────
-      applyFit(front, clips[0]);
-      front.addEventListener("canplay", function onFrontFirst() {
-        front.style.opacity = "1";
-        front.play().catch(() => {});
-        watchFront();
-      }, { once: true });
-      front.src = clips[0];
-      front.load();
-
-      idx = 1;
-      loadBack(clips[idx]);
-
+      // Resume after tab backgrounding
       document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) front.play().catch(() => {});
+        if (!document.hidden) {
+          if (front.ended) front.currentTime = 0;
+          front.play().catch(() => {});
+        }
       });
     }
   }
