@@ -62,88 +62,102 @@
     } else {
       // ── Desktop ─────────────────────────────────────
       //
-      // THE RULE: never make back visible until it fires canplay.
-      // If back isn't ready when front ends, loop front silently
-      // until back fires canplay, then hard-cut instantly.
-      // This makes black screens structurally impossible.
+      // Two-slot state machine.
+      //
+      // backReady  — set to true the moment back's canplay fires.
+      //              Listener is registered BEFORE back.src is set so
+      //              we can never miss the event.
+      //
+      // swapPending — front has ended but back wasn't ready; front is
+      //               looping. Set to true so the canplay handler
+      //               knows to swap as soon as back is ready.
       //
       let front = vA, back = vB;
+      let backReady   = false;
+      let swapPending = false;
+
       front.style.zIndex = "1";
       back.style.zIndex  = "0";
 
-      function loadInto(v, src) {
-        applyFit(v, src);
-        v.src = src;
-        v.load();
+      // loadBack: wire canplay listener FIRST, then set src — no race.
+      function loadBack(src) {
+        backReady = false;
+        applyFit(back, src);
+
+        back.addEventListener("canplay", function onReady() {
+          backReady = true;
+          if (swapPending) {
+            swapPending = false;
+            executeSwap();
+          }
+        }, { once: true });
+
+        back.src = src;
+        back.load();
       }
 
-      // Prime the buffers
-      loadInto(front, clips[0]);
-      idx = 1;
-      loadInto(back, clips[idx]);
+      function executeSwap() {
+        front.loop = false;
 
-      // Don't show front until its first frame is decoded
-      front.addEventListener("canplay", function() {
-        front.style.opacity = "1";
-        front.play().catch(() => {});
-        startWatcher();
-      }, { once: true });
+        back.play().catch(() => {});
+        back.style.zIndex  = "1";
+        back.style.opacity = "1";
+        front.style.zIndex  = "0";
+        front.style.opacity = "0";
 
-      function startWatcher() {
-        const myFront = front;
-        const myBack  = back;
-        let nearEndFired = false;
+        const oldFront = front;
+        front = back;
+        back  = oldFront;
 
-        // ── Called once when front is about to finish ──
-        function onNearEnd() {
-          if (nearEndFired) return;
-          nearEndFired = true;
-          myFront.removeEventListener("timeupdate", onTime);
+        watchFront();                              // watch new front
+        idx = (idx + 1) % clips.length;
+        loadBack(clips[idx]);                      // preload into new back
+      }
 
-          if (myBack.readyState >= 2) {
-            // Back has at least one decoded frame — cut now
-            doSwap();
-          } else {
-            // Back isn't ready yet: loop front so we never go black,
-            // then cut the instant back fires canplay.
-            myFront.loop = true;
-            myBack.addEventListener("canplay", doSwap, { once: true });
-          }
+      function onFrontNearEnd() {
+        if (backReady) {
+          executeSwap();
+        } else {
+          // Back hasn't loaded yet — loop front seamlessly until it does
+          swapPending = true;
+          front.loop  = true;
         }
+      }
 
-        // ── The actual hard cut ────────────────────────
-        function doSwap() {
-          myFront.loop = false;
+      function watchFront() {
+        const watching = front;
+        let called = false;
 
-          myBack.play().catch(() => {});
-          myBack.style.zIndex  = "1";
-          myBack.style.opacity = "1";
-          myFront.style.zIndex  = "0";
-          myFront.style.opacity = "0";
-
-          front = myBack;
-          back  = myFront;
-
-          // Load the clip after this one into the now-hidden old front
-          idx = (idx + 1) % clips.length;
-          loadInto(back, clips[idx]);
-
-          // Arm the watcher for the new front
-          startWatcher();
+        function trigger() {
+          if (called) return;
+          called = true;
+          watching.removeEventListener("timeupdate", onTime);
+          onFrontNearEnd();
         }
 
         function onTime() {
-          // Trigger 0.5 s early to hide any black tail frames in the source file
-          const cutAt = myFront.duration - 0.5;
-          if (cutAt > 0 && myFront.currentTime >= cutAt) onNearEnd();
+          const cutAt = watching.duration - 0.5;
+          if (cutAt > 0 && watching.currentTime >= cutAt) trigger();
         }
 
-        myFront.addEventListener("timeupdate", onTime);
-        myFront.addEventListener("ended", onNearEnd, { once: true });
-        myFront.addEventListener("error", onNearEnd, { once: true });
+        watching.addEventListener("timeupdate", onTime);
+        watching.addEventListener("ended", trigger, { once: true });
+        watching.addEventListener("error", trigger, { once: true });
       }
 
-      // Resume after tab backgrounding
+      // ── Init ──────────────────────────────────────
+      applyFit(front, clips[0]);
+      front.addEventListener("canplay", function onFrontFirst() {
+        front.style.opacity = "1";
+        front.play().catch(() => {});
+        watchFront();
+      }, { once: true });
+      front.src = clips[0];
+      front.load();
+
+      idx = 1;
+      loadBack(clips[idx]);
+
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden) front.play().catch(() => {});
       });
